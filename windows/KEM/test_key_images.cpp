@@ -1,5 +1,6 @@
 #include "src/include/clwe/color_kem.hpp"
 #include "src/include/clwe/clwe.hpp"
+#include "src/core/path_config.hpp"
 #include <iostream>
 #include <vector>
 #include <fstream>
@@ -111,12 +112,18 @@ std::vector<uint8_t> load_bin_file(const std::string& filename) {
 }
 
 int main(int argc, char* argv[]) {
-    std::string input_dir = ".";
-    for (int i = 1; i < argc; ++i) {
-        if (std::string(argv[i]) == "-d" && i + 1 < argc) {
-            input_dir = argv[i + 1];
-            ++i;
-        }
+    // Initialize path configuration
+    auto& config = clwe::config::PathConfig::getInstance();
+    
+    // Load configuration from various sources
+    config.loadFromArgs(argc, argv);
+    config.loadFromEnvironment();
+    config.setDefaultPaths();
+    
+    // Validate and create directories
+    if (!config.validatePaths()) {
+        std::cerr << "Error: Invalid path configuration" << std::endl;
+        return 1;
     }
 
     try {
@@ -137,13 +144,16 @@ int main(int argc, char* argv[]) {
 
         // Test WebP
         try {
+            // Use dynamic paths from configuration
+            std::string input_dir = config.getKeyInputDirectory();
+            
             // Save as WebP
-            std::string pub_webp_file = input_dir + "/public_key.webp";
-            std::string priv_webp_file = input_dir + "/private_key.webp";
+            std::string pub_webp_file = config.getKeyFilePath("public_key.webp", true);
+            std::string priv_webp_file = config.getKeyFilePath("private_key.webp", true);
             save_webp_file(pub_ser, pub_webp_file);
             save_webp_file(priv_ser, priv_webp_file);
 
-            // Load from WebP
+            // Load from WebP using input directory
             auto pub_webp = load_webp_file(pub_webp_file);
             auto priv_webp = load_webp_file(priv_webp_file);
 

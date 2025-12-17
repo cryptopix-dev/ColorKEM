@@ -5,7 +5,7 @@ ColorKEM Comprehensive Test Suite
 echo.
 echo.
 
-set TotalTests=1
+set TotalTests=3
 set PassedTests=0
 set FailedTests=0
 
@@ -29,9 +29,31 @@ if %errorlevel% equ 0 (
 )
 
 echo.
+echo Running Image Keys test...
+call build\test_image_keys.exe
+if %errorlevel% equ 0 (
+    echo PASSED
+    set /a PassedTests+=1
+) else (
+    echo FAILED
+    set /a FailedTests+=1
+)
+
+echo.
+echo Running Path Configuration test...
+call build\test_path_config.exe
+if %errorlevel% equ 0 (
+    echo PASSED
+    set /a PassedTests+=1
+) else (
+    echo FAILED
+    set /a FailedTests+=1
+)
+
+echo.
 echo ========================================
 echo Test Summary
-=======================================
+echo =======================================
 echo Total Tests: %TotalTests%
 echo Passed: %PassedTests%
 echo Failed: %FailedTests%

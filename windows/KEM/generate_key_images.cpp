@@ -1,5 +1,6 @@
 #include "src/include/clwe/color_kem.hpp"
 #include "src/include/clwe/clwe.hpp"
+#include "src/core/path_config.hpp"
 #include <iostream>
 #include <vector>
 #include <iomanip>
@@ -55,13 +56,21 @@ bool save_webp_file(const std::vector<uint8_t>& data, const std::string& filenam
 }
 
 int main(int argc, char* argv[]) {
-    std::string output_dir = ".";
-    for (int i = 1; i < argc; ++i) {
-        if (std::string(argv[i]) == "-d" && i + 1 < argc) {
-            output_dir = argv[i + 1];
-            ++i;
-        }
+    // Initialize path configuration
+    auto& config = clwe::config::PathConfig::getInstance();
+    
+    // Load configuration from various sources
+    config.loadFromArgs(argc, argv);
+    config.loadFromEnvironment();
+    config.setDefaultPaths();
+    
+    // Validate and create directories
+    if (!config.validatePaths()) {
+        std::cerr << "Error: Invalid path configuration" << std::endl;
+        return 1;
     }
+    
+    config.createDirectories();
 
     try {
         clwe::CLWEParameters params(512);
@@ -76,24 +85,27 @@ int main(int argc, char* argv[]) {
         auto public_serialized = public_key.serialize();
         auto private_serialized = private_key.serialize();
 
-        std::cout << "Saving public key as public_key.webp..." << std::endl;
-        if (save_webp_file(public_serialized, output_dir + "/public_key.webp")) {
+        // Use dynamic paths from configuration
+        std::string output_dir = config.getKeyOutputDirectory();
+        
+        std::cout << "Saving public key as public_key.webp to: " << output_dir << std::endl;
+        if (save_webp_file(public_serialized, config.getKeyFilePath("public_key.webp", true))) {
             std::cout << "Public key saved successfully!" << std::endl;
         } else {
             std::cerr << "Failed to save public key as WebP." << std::endl;
             return 1;
         }
 
-        std::cout << "Saving private key as private_key.webp..." << std::endl;
-        if (save_webp_file(private_serialized, output_dir + "/private_key.webp")) {
+        std::cout << "Saving private key as private_key.webp to: " << output_dir << std::endl;
+        if (save_webp_file(private_serialized, config.getKeyFilePath("private_key.webp", true))) {
             std::cout << "Private key saved successfully!" << std::endl;
         } else {
             std::cerr << "Failed to save private key as WebP." << std::endl;
             return 1;
         }
 
-        std::cout << "Saving public key as public_key.bin..." << std::endl;
-        std::ofstream pub_bin(output_dir + "/public_key.bin", std::ios::binary);
+        std::cout << "Saving public key as public_key.bin to: " << output_dir << std::endl;
+        std::ofstream pub_bin(config.getKeyFilePath("public_key.bin", true), std::ios::binary);
         if (pub_bin) {
             pub_bin.write(reinterpret_cast<const char*>(public_serialized.data()), public_serialized.size());
             pub_bin.close();
@@ -103,8 +115,8 @@ int main(int argc, char* argv[]) {
             return 1;
         }
 
-        std::cout << "Saving private key as private_key.bin..." << std::endl;
-        std::ofstream priv_bin(output_dir + "/private_key.bin", std::ios::binary);
+        std::cout << "Saving private key as private_key.bin to: " << output_dir << std::endl;
+        std::ofstream priv_bin(config.getKeyFilePath("private_key.bin", true), std::ios::binary);
         if (priv_bin) {
             priv_bin.write(reinterpret_cast<const char*>(private_serialized.data()), private_serialized.size());
             priv_bin.close();
@@ -115,10 +127,10 @@ int main(int argc, char* argv[]) {
         }
 
         std::cout << "All keys saved as WebP images and bin files!" << std::endl;
-        std::cout << "Public key image: " << output_dir << "/public_key.webp" << std::endl;
-        std::cout << "Private key image: " << output_dir << "/private_key.webp" << std::endl;
-        std::cout << "Public key bin: " << output_dir << "/public_key.bin" << std::endl;
-        std::cout << "Private key bin: " << output_dir << "/private_key.bin" << std::endl;
+        std::cout << "Public key image: " << config.getKeyFilePath("public_key.webp", true) << std::endl;
+        std::cout << "Private key image: " << config.getKeyFilePath("private_key.webp", true) << std::endl;
+        std::cout << "Public key bin: " << config.getKeyFilePath("public_key.bin", true) << std::endl;
+        std::cout << "Private key bin: " << config.getKeyFilePath("private_key.bin", true) << std::endl;
 
         return 0;
     } catch (const std::exception& e) {

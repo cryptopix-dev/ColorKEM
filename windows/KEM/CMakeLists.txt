@@ -97,6 +97,7 @@ add_library(clwe STATIC
     src/core/sampling.cpp
     src/core/utils.cpp
     src/core/performance_metrics.cpp
+    src/core/path_config.cpp
 )
 
 target_link_libraries(clwe PRIVATE OpenSSL::Crypto)
@@ -131,6 +132,21 @@ if(WEBP_FOUND)
     add_test(NAME TestKeyImages COMMAND test_key_images)
 endif()
 
+# New test executables for additional functionality
+# Test image keys executable (depends on color_integration)
+add_executable(test_image_keys test_image_keys.cpp)
+target_link_libraries(test_image_keys PRIVATE clwe)
+
+# Add test for image keys
+add_test(NAME TestImageKeys COMMAND test_image_keys)
+
+# Test path configuration system executable
+add_executable(test_path_config test_path_config.cpp)
+target_link_libraries(test_path_config PRIVATE clwe)
+
+# Add test for path configuration
+add_test(NAME TestPathConfig COMMAND test_path_config)
+
 # Tests
 enable_testing()
 
@@ -139,7 +155,7 @@ add_subdirectory(tests)
 
 # Add comprehensive test target - run all tests including unit tests
 add_custom_target(run_all_tests
-    COMMAND ${CMAKE_COMMAND} -E echo "Running basic verification test..."
+    COMMAND ${CMAKE_COMMAND} -E echo "Running comprehensive verification test..."
     COMMAND ${CMAKE_CTEST_COMMAND} --output-on-failure
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
     COMMENT "Running ColorKEM verification and unit tests"
