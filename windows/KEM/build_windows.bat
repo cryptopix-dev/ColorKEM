@@ -79,12 +79,6 @@ if exist "build\generate_key_images.exe" (
     echo   - generate_key_images: Key image generator
     echo   - test_key_images: Key image test
 )
-if exist "build\test_image_keys.exe" (
-    echo   - test_image_keys: Image keys test
-)
-if exist "build\test_path_config.exe" (
-    echo   - test_path_config: Path configuration system test
-)
 echo.
 
 REM Check if we can run the main benchmark
