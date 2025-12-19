@@ -1,0 +1,21 @@
+@echo off
+REM Custom Paths Configuration for ColorKEM
+REM Copy this file to custom_paths.bat and uncomment lines to override automatic detection
+
+REM ============================================================================
+REM MANUAL OVERRIDES
+REM Use these if automatic detection fails or picks the wrong version.
+REM ============================================================================
+
+REM 1. OpenSSL Path (Point to the root folder containin bin, include, lib)
+REM set "OPENSSL_ROOT_DIR=C:\Program Files\OpenSSL-Win64"
+
+REM 2. MinGW (GCC/G++) Paths
+REM set "GCC_FULL_PATH=C:\ProgramData\mingw64\mingw64\bin\gcc.exe"
+REM set "GXX_FULL_PATH=C:\ProgramData\mingw64\mingw64\bin\g++.exe"
+
+REM 3. CMake Path (Optional, usually in PATH)
+REM set "CMAKE_EXECUTABLE=C:\Program Files\CMake\bin\cmake.exe"
+
+REM 4. PKG-CONFIG Path (Optional)
+REM set "PKG_CONFIG_EXECUTABLE=C:\ProgramData\chocolatey\bin\pkg-config.exe"
