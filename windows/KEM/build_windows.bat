@@ -41,6 +41,29 @@ set "MINGW_ROOT=!CD!"
 popd
 echo [INFO] Derived MinGW Root: !MINGW_ROOT!
 
+REM Find OpenSSL location to better guide CMake
+for /f "tokens=*" %%i in ('where openssl') do set "OPENSSL_FULL_PATH=%%i" & goto :found_openssl
+:found_openssl
+echo [INFO] OpenSSL found at: !OPENSSL_FULL_PATH!
+for %%I in ("!OPENSSL_FULL_PATH!") do set "OPENSSL_BIN=%%~dpI"
+pushd "!OPENSSL_BIN!.."
+set "OPENSSL_DERIVED_ROOT=!CD!"
+popd
+echo [INFO] Derived OpenSSL Root: !OPENSSL_DERIVED_ROOT!
+
+REM Determine the correct OPENSSL_ROOT_DIR
+set "OPENSSL_ARG="
+if exist "!MINGW_ROOT!\include\openssl\ssl.h" (
+    echo [INFO] Found OpenSSL headers in MinGW Root.
+    set "OPENSSL_ARG=-DOPENSSL_ROOT_DIR="!MINGW_ROOT!""
+) else if exist "!OPENSSL_DERIVED_ROOT!\include\openssl\ssl.h" (
+    echo [INFO] Found OpenSSL headers in OpenSSL Derived Root.
+    set "OPENSSL_ARG=-DOPENSSL_ROOT_DIR="!OPENSSL_DERIVED_ROOT!""
+) else (
+    echo [WARNING] Could not find OpenSSL headers in standard locations.
+    echo [WARNING] CMake might fail to find OpenSSL.
+)
+
 REM Try to find pkg-config
 set "PKG_CONFIG_ARG="
 where pkg-config >nul 2>nul
@@ -68,12 +91,11 @@ cd build
 REM Run CMake
 echo Configuring project with CMake...
 REM We pass the compilers explicitly to ensure consistency
-REM We also pass OPENSSL_ROOT_DIR based on the compiler location to ensure compat
 cmake .. -G "MinGW Makefiles" ^
     -DCMAKE_C_COMPILER="!GCC_FULL_PATH!" ^
     -DCMAKE_CXX_COMPILER="!GXX_FULL_PATH!" ^
     -DCMAKE_TOOLCHAIN_FILE="..\mingw-toolchain.cmake" ^
-    -DOPENSSL_ROOT_DIR="!MINGW_ROOT!" ^
+    !OPENSSL_ARG! ^
     !PKG_CONFIG_ARG!
 
 if %errorlevel% neq 0 (
