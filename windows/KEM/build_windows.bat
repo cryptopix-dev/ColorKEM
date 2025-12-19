@@ -181,7 +181,7 @@ goto :openssl_done
 
 :find_fallback_openssl
     REM Check Common Windows Locations
-    set "COMMON_OPENSSL=C:\Program Files\OpenSSL-Win64;C:\Program Files\OpenSSL;C:\OpenSSL-Win64"
+    set "COMMON_OPENSSL=C:\msys64\mingw64;C:\Program Files\OpenSSL-Win64;C:\Program Files\OpenSSL;C:\OpenSSL-Win64"
     for %%p in ("!COMMON_OPENSSL:;=" "!") do (
         if exist "%%~p\include\openssl\ssl.h" (
             set "OPENSSL_ROOT_DIR=%%~p"
@@ -240,7 +240,8 @@ if %errorlevel% neq 0 (
 )
 
 echo Building project...
-"!CMAKE_CMD!" --build .
+echo Building project (Sequential)...
+"%CMAKE_CMD%" --build . --parallel 1
 if %errorlevel% neq 0 (
     echo Build failed.
     exit /b 1
