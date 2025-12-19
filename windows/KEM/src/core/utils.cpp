@@ -21,6 +21,17 @@
 #include <sys/random.h>
 #endif
 
+#if defined(__MINGW32__)
+#include <stdio.h>
+#include <stdarg.h>
+// Fix for undefined reference to __imp__vsnprintf in some MinGW builds with OpenSSL
+// This defines the symbol that libcrypto.a is looking for (which expects DLL import)
+// and points it to the statically linked vsnprintf implementation.
+extern "C" {
+    __attribute__((weak)) int (*__imp__vsnprintf)(char*, size_t, const char*, va_list) = vsnprintf;
+}
+#endif
+
 namespace clwe {
 
 

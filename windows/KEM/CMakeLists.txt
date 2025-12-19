@@ -134,7 +134,7 @@ endif()
 
 # Windows Cryptography API for secure random
 if(WIN32)
-    target_link_libraries(clwe PRIVATE crypt32 bcrypt)
+    target_link_libraries(clwe PRIVATE crypt32 bcrypt ws2_32)
 endif()
 
 # KEM demonstration - commented out as demo_kem.cpp is missing
