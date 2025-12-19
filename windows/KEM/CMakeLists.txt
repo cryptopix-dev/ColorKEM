@@ -27,6 +27,28 @@ endif()
 # set(OPENSSL_ROOT_DIR "C:/ProgramData/mingw64/mingw64/opt")
 set(OPENSSL_USE_STATIC_LIBS TRUE)
 
+# Automatically detect OpenSSL root based on compiler location to avoid mismatches
+if(WIN32 AND MINGW AND NOT DEFINED OPENSSL_ROOT_DIR)
+    # Ensure we have the full path to the compiler
+    if(NOT IS_ABSOLUTE "${CMAKE_C_COMPILER}")
+       find_program(FULL_C_COMPILER_PATH ${CMAKE_C_COMPILER})
+    else()
+       set(FULL_C_COMPILER_PATH ${CMAKE_C_COMPILER})
+    endif()
+
+    if(FULL_C_COMPILER_PATH)
+        get_filename_component(COMPILER_DIR ${FULL_C_COMPILER_PATH} DIRECTORY)
+        get_filename_component(MINGW_TOOLCHAIN_ROOT ${COMPILER_DIR} DIRECTORY)
+        
+        # Check standard locations relative to the compiler toolchain
+        # This prevents picking up 'ProgramData' libs when using 'MSYS2' compiler, and vice-versa
+        if(EXISTS "${MINGW_TOOLCHAIN_ROOT}/include/openssl/ssl.h" OR EXISTS "${MINGW_TOOLCHAIN_ROOT}/lib/libcrypto.a")
+            message(STATUS "Auto-detected OpenSSL Root from Compiler Path: ${MINGW_TOOLCHAIN_ROOT}")
+            set(OPENSSL_ROOT_DIR ${MINGW_TOOLCHAIN_ROOT})
+        endif()
+    endif()
+endif()
+
 # Find zlib manually for OpenSSL
 find_path(ZLIB_INCLUDE_DIR zlib.h PATHS C:/ProgramData/mingw64/mingw64/include C:/msys64/mingw64/include)
 find_library(ZLIB_LIBRARY libz.a PATHS C:/ProgramData/mingw64/mingw64/lib C:/msys64/mingw64/lib)
