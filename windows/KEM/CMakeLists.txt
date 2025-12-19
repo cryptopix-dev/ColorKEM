@@ -145,15 +145,50 @@ endif()
 add_executable(benchmark_color_kem_timing benchmark_color_kem_timing.cpp)
 target_link_libraries(benchmark_color_kem_timing PRIVATE clwe)
 
+# Windows-specific libraries for OpenSSL static linking
+if(WIN32)
+    # Link required Windows and OpenSSL libraries in correct order
+    # mingwex provides vsnprintf and other standard C functions needed by OpenSSL
+    target_link_libraries(benchmark_color_kem_timing PRIVATE 
+        OpenSSL::Crypto 
+        OpenSSL::SSL
+        mingwex
+        crypt32 
+        bcrypt 
+        ws2_32
+        gdi32
+    )
+    
+    if(ZLIB_FOUND)
+        target_link_libraries(benchmark_color_kem_timing PRIVATE ${ZLIB_LIBRARIES})
+    endif()
+endif()
+
 
 if(WEBP_FOUND)
     # Key image generator executable
     add_executable(generate_key_images generate_key_images.cpp)
     target_link_libraries(generate_key_images PRIVATE clwe ${WEBP_LIBRARIES})
+    
+    # Windows-specific libraries for OpenSSL static linking
+    if(WIN32)
+        target_link_libraries(generate_key_images PRIVATE OpenSSL::Crypto OpenSSL::SSL mingwex crypt32 bcrypt ws2_32 gdi32)
+        if(ZLIB_FOUND)
+            target_link_libraries(generate_key_images PRIVATE ${ZLIB_LIBRARIES})
+        endif()
+    endif()
 
     # Key image test executable
     add_executable(test_key_images test_key_images.cpp)
     target_link_libraries(test_key_images PRIVATE clwe ${WEBP_LIBRARIES})
+    
+    # Windows-specific libraries for OpenSSL static linking
+    if(WIN32)
+        target_link_libraries(test_key_images PRIVATE OpenSSL::Crypto OpenSSL::SSL mingwex crypt32 bcrypt ws2_32 gdi32)
+        if(ZLIB_FOUND)
+            target_link_libraries(test_key_images PRIVATE ${ZLIB_LIBRARIES})
+        endif()
+    endif()
 
     # Add test for key images
     add_test(NAME TestKeyImages COMMAND test_key_images)
