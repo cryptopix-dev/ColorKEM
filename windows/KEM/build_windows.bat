@@ -1,5 +1,5 @@
 @echo off
-REM Build script for ColorKEM Windows using MinGW
+REM Build script for ColorKEM Windows using MinGW - Dynamic Configuration
 setlocal enabledelayedexpansion
 
 echo ========================================
@@ -9,7 +9,7 @@ echo.
 
 REM Check for required tools
 echo Checking for required build tools...
-set "requiredTools=cmake gcc openssl"
+set "requiredTools=cmake gcc g++ openssl"
 for %%t in (%requiredTools%) do (
     where %%t >nul 2>nul
     if !errorlevel! equ 0 (
@@ -24,17 +24,34 @@ for %%t in (%requiredTools%) do (
 echo All required tools are available.
 echo.
 
-REM Set compiler environment variables for CMake
-set "CC=C:/ProgramData/mingw64/mingw64/bin/gcc.exe"
-set "CXX=C:/ProgramData/mingw64/mingw64/bin/g++.exe"
-set "PATH=C:/ProgramData/mingw64/mingw64/bin;%PATH%"
-set "PKG_CONFIG_EXECUTABLE=C:/msys64/usr/bin/pkg-config.exe"
-set "PKG_CONFIG_PATH=C:/msys64/mingw64/lib/pkgconfig;%PKG_CONFIG_PATH%"
-set "OPENSSL_ROOT_DIR=C:/ProgramData/mingw64/mingw64/opt"
+REM dynamically find compilers
+for /f "tokens=*" %%i in ('where gcc') do set "GCC_FULL_PATH=%%i" & goto :found_gcc
+:found_gcc
+for /f "tokens=*" %%i in ('where g++') do set "GXX_FULL_PATH=%%i" & goto :found_gxx
+:found_gxx
 
-REM Export environment variables for subprocesses
-setx CC "C:/ProgramData/mingw64/mingw64/bin/gcc.exe"
-setx CXX "C:/ProgramData/mingw64/mingw64/bin/g++.exe"
+echo [INFO] C Compiler: !GCC_FULL_PATH!
+echo [INFO] C++ Compiler: !GXX_FULL_PATH!
+
+REM Derive MinGW root from GCC path for OpenSSL detection
+for %%I in ("!GCC_FULL_PATH!") do set "GCC_BIN=%%~dpI"
+REM Remove trailing backslash if present to be safe, though pushd handles it
+pushd "!GCC_BIN!.."
+set "MINGW_ROOT=!CD!"
+popd
+echo [INFO] Derived MinGW Root: !MINGW_ROOT!
+
+REM Try to find pkg-config
+set "PKG_CONFIG_ARG="
+where pkg-config >nul 2>nul
+if !errorlevel! equ 0 (
+    for /f "tokens=*" %%i in ('where pkg-config') do set "PKG_CONFIG_PATH_EXEC=%%i" & goto :found_pkg
+)
+:found_pkg
+if defined PKG_CONFIG_PATH_EXEC (
+    echo [INFO] pkg-config: !PKG_CONFIG_PATH_EXEC!
+    set "PKG_CONFIG_ARG=-DPKG_CONFIG_EXECUTABLE="!PKG_CONFIG_PATH_EXEC!""
+)
 
 REM Clean build directory to avoid stale CMake cache issues
 if exist "build" (
@@ -50,7 +67,15 @@ cd build
 
 REM Run CMake
 echo Configuring project with CMake...
-cmake .. -G "MinGW Makefiles" -DCMAKE_TOOLCHAIN_FILE="mingw-toolchain.cmake" -DPKG_CONFIG_EXECUTABLE="C:/msys64/usr/bin/pkg-config.exe"
+REM We pass the compilers explicitly to ensure consistency
+REM We also pass OPENSSL_ROOT_DIR based on the compiler location to ensure compat
+cmake .. -G "MinGW Makefiles" ^
+    -DCMAKE_C_COMPILER="!GCC_FULL_PATH!" ^
+    -DCMAKE_CXX_COMPILER="!GXX_FULL_PATH!" ^
+    -DCMAKE_TOOLCHAIN_FILE="..\mingw-toolchain.cmake" ^
+    -DOPENSSL_ROOT_DIR="!MINGW_ROOT!" ^
+    !PKG_CONFIG_ARG!
+
 if %errorlevel% neq 0 (
     echo CMake configuration failed.
     exit /b 1

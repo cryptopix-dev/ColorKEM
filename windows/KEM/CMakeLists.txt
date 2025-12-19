@@ -19,7 +19,8 @@ endif()
 # SIMD optimization flags will be set via toolchain file
 
 # Dependencies - Use MinGW's built-in OpenSSL
-set(OPENSSL_ROOT_DIR "C:/ProgramData/mingw64/mingw64/opt")
+# OPENSSL_ROOT_DIR should be passed from command line
+# set(OPENSSL_ROOT_DIR "C:/ProgramData/mingw64/mingw64/opt")
 set(OPENSSL_USE_STATIC_LIBS TRUE)
 
 # Find zlib manually for OpenSSL
@@ -71,8 +72,9 @@ if(NOT GTest_FOUND)
     set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 
     # Set compiler for subproject before making it available
-    set(CMAKE_C_COMPILER "C:/ProgramData/mingw64/mingw64/bin/gcc.exe" CACHE FILEPATH "C compiler" FORCE)
-    set(CMAKE_CXX_COMPILER "C:/ProgramData/mingw64/mingw64/bin/g++.exe" CACHE FILEPATH "C++ compiler" FORCE)
+    # CMAKE_C_COMPILER and CMAKE_CXX_COMPILER are passed from the main project
+    # set(CMAKE_C_COMPILER "C:/ProgramData/mingw64/mingw64/bin/gcc.exe" CACHE FILEPATH "C compiler" FORCE)
+    # set(CMAKE_CXX_COMPILER "C:/ProgramData/mingw64/mingw64/bin/g++.exe" CACHE FILEPATH "C++ compiler" FORCE)
 
     # Suppress CMake deprecation warnings from googletest
     set(CMAKE_POLICY_VERSION_MINIMUM 3.16)

@@ -43,7 +43,7 @@ bool save_webp_file(const std::vector<uint8_t>& data, const std::string& filenam
         WebPFree(webp_data);
         return false;
     }
-    file.write(reinterpret_cast<char*>(webp_data), webp_size);*
+    file.write(reinterpret_cast<char*>(webp_data), webp_size);
     if (!file.good()) {
         WebPFree(webp_data);
         return false;
@@ -54,7 +54,7 @@ bool save_webp_file(const std::vector<uint8_t>& data, const std::string& filenam
     return true;
 }
  
-int main(int argc, char argv[]) {
+int main(int argc, char* argv[]) {
     std::string output_dir = ".";
     for (int i = 1; i < argc; ++i) {
         if (std::string(argv[i]) == "-d" && i + 1 < argc) {
@@ -95,7 +95,7 @@ int main(int argc, char argv[]) {
         std::cout << "Saving public key as public_key.bin..." << std::endl;
         std::ofstream pub_bin(output_dir + "/public_key.bin", std::ios::binary);
         if (pub_bin) {
-            pub_bin.write(reinterpret_cast<const char*>(public_serialized.data()), public_serialized.size());*
+            pub_bin.write(reinterpret_cast<const char*>(public_serialized.data()), public_serialized.size());
             pub_bin.close();
             std::cout << "Public key saved successfully!" << std::endl;
         } else {
@@ -106,7 +106,7 @@ int main(int argc, char argv[]) {
         std::cout << "Saving private key as private_key.bin..." << std::endl;
         std::ofstream priv_bin(output_dir + "/private_key.bin", std::ios::binary);
         if (priv_bin) {
-            priv_bin.write(reinterpret_cast<const char>(private_serialized.data()), private_serialized.size());
+            priv_bin.write(reinterpret_cast<const char*>(private_serialized.data()), private_serialized.size());
             priv_bin.close();
             std::cout << "Private key saved successfully!" << std::endl;
         } else {
