@@ -6,6 +6,10 @@ project(ColorKEM VERSION 1.0.0 LANGUAGES C CXX)
 # Compiler settings
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+# Enable GNU extensions (uses -std=gnu++17 instead of -std=c++17)
+# This prevents __STRICT_ANSI__ from being defined (fixing the at_quick_exit issue)
+# and enables GNU extensions like 'Q' suffix for high-precision floats (fixing the googletest issue).
+set(CMAKE_CXX_EXTENSIONS ON)
 
 # Compiler flags will be set via toolchain file
 
