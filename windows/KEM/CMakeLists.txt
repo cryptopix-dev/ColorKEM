@@ -135,6 +135,53 @@ endif()
 # Windows Cryptography API for secure random
 if(WIN32)
     target_link_libraries(clwe PRIVATE crypt32 bcrypt ws2_32)
+    
+    # Find mingwex library once for all executables
+    # This library provides vsnprintf and other standard C functions needed by OpenSSL
+    find_library(MINGWEX_LIBRARY 
+        NAMES mingwex libmingwex
+        PATHS 
+            ${OPENSSL_ROOT_DIR}/lib
+            ${OPENSSL_ROOT_DIR}/../lib
+            C:/msys64/mingw64/lib
+            C:/ProgramData/mingw64/mingw64/lib
+        NO_DEFAULT_PATH
+    )
+    
+    # If not found in specific paths, try system search
+    if(NOT MINGWEX_LIBRARY)
+        find_library(MINGWEX_LIBRARY NAMES mingwex libmingwex)
+    endif()
+    
+    if(MINGWEX_LIBRARY)
+        message(STATUS "Found mingwex library: ${MINGWEX_LIBRARY}")
+    else()
+        message(WARNING "mingwex library not found in standard locations, will attempt to link by name")
+    endif()
+    
+    # Function to add Windows-specific libraries to executables
+    function(add_windows_openssl_libs target_name)
+        # Add linker flags to handle potential symbol mismatches
+        target_link_options(${target_name} PRIVATE -Wl,--allow-multiple-definition)
+        
+        # Link OpenSSL libraries
+        target_link_libraries(${target_name} PRIVATE OpenSSL::Crypto OpenSSL::SSL)
+        
+        # Add mingwex library
+        if(MINGWEX_LIBRARY)
+            target_link_libraries(${target_name} PRIVATE ${MINGWEX_LIBRARY})
+        else()
+            target_link_libraries(${target_name} PRIVATE mingwex)
+        endif()
+        
+        # Add Windows system libraries
+        target_link_libraries(${target_name} PRIVATE crypt32 bcrypt ws2_32 gdi32)
+        
+        # Add zlib if found
+        if(ZLIB_FOUND)
+            target_link_libraries(${target_name} PRIVATE ${ZLIB_LIBRARIES})
+        endif()
+    endfunction()
 endif()
 
 # KEM demonstration - commented out as demo_kem.cpp is missing
@@ -147,21 +194,7 @@ target_link_libraries(benchmark_color_kem_timing PRIVATE clwe)
 
 # Windows-specific libraries for OpenSSL static linking
 if(WIN32)
-    # Link required Windows and OpenSSL libraries in correct order
-    # mingwex provides vsnprintf and other standard C functions needed by OpenSSL
-    target_link_libraries(benchmark_color_kem_timing PRIVATE 
-        OpenSSL::Crypto 
-        OpenSSL::SSL
-        mingwex
-        crypt32 
-        bcrypt 
-        ws2_32
-        gdi32
-    )
-    
-    if(ZLIB_FOUND)
-        target_link_libraries(benchmark_color_kem_timing PRIVATE ${ZLIB_LIBRARIES})
-    endif()
+    add_windows_openssl_libs(benchmark_color_kem_timing)
 endif()
 
 
@@ -172,10 +205,7 @@ if(WEBP_FOUND)
     
     # Windows-specific libraries for OpenSSL static linking
     if(WIN32)
-        target_link_libraries(generate_key_images PRIVATE OpenSSL::Crypto OpenSSL::SSL mingwex crypt32 bcrypt ws2_32 gdi32)
-        if(ZLIB_FOUND)
-            target_link_libraries(generate_key_images PRIVATE ${ZLIB_LIBRARIES})
-        endif()
+        add_windows_openssl_libs(generate_key_images)
     endif()
 
     # Key image test executable
@@ -184,10 +214,7 @@ if(WEBP_FOUND)
     
     # Windows-specific libraries for OpenSSL static linking
     if(WIN32)
-        target_link_libraries(test_key_images PRIVATE OpenSSL::Crypto OpenSSL::SSL mingwex crypt32 bcrypt ws2_32 gdi32)
-        if(ZLIB_FOUND)
-            target_link_libraries(test_key_images PRIVATE ${ZLIB_LIBRARIES})
-        endif()
+        add_windows_openssl_libs(test_key_images)
     endif()
 
     # Add test for key images

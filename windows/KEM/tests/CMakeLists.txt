@@ -52,7 +52,7 @@ if(WIN32)
     )
     
     foreach(test_exe ${TEST_EXECUTABLES})
-        target_link_libraries(${test_exe} PRIVATE OpenSSL::Crypto OpenSSL::SSL mingwex crypt32 bcrypt ws2_32 gdi32)
+        add_windows_openssl_libs(${test_exe})
     endforeach()
 endif()
 
@@ -80,7 +80,7 @@ if(ENABLE_FUZZING)
         )
         
         foreach(fuzz_exe ${FUZZ_EXECUTABLES})
-            target_link_libraries(${fuzz_exe} PRIVATE OpenSSL::Crypto OpenSSL::SSL mingwex crypt32 bcrypt ws2_32 gdi32)
+            add_windows_openssl_libs(${fuzz_exe})
         endforeach()
     endif()
 endif()
