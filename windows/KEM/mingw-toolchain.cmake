@@ -7,12 +7,10 @@
 # OpenSSL path should be passed via command line or environment
 # set(OPENSSL_ROOT_DIR ... ) - Removed to allow auto-detection
 
-# Set compiler flags
-set(CMAKE_CXX_STANDARD 17 CACHE STRING "C++ standard")
-set(CMAKE_CXX_STANDARD_REQUIRED ON CACHE BOOL "Require C++ standard")
-# Enable GNU extensions to prevent __STRICT_ANSI__ from being defined
-# This fixes the at_quick_exit and quick_exit errors with GCC 15.2.0
-set(CMAKE_CXX_EXTENSIONS ON CACHE BOOL "Enable GNU extensions")
+# Compiler flags are set in main CMakeLists.txt
+
+# Fix for GCC 15.2.0 __STRICT_ANSI__ issue
+add_compile_options(-include ${CMAKE_CURRENT_LIST_DIR}/gcc_15_fix.h -fext-numeric-literals)
 
 # Windows-specific definitions
 add_definitions(-D_MINGW -DWIN32 -D_WIN32)
@@ -20,3 +18,4 @@ add_definitions(-D_MINGW -DWIN32 -D_WIN32)
 # Ensure C99 standard library functions are available
 # This is needed for GCC 15.2.0 compatibility across different MinGW installations
 add_compile_definitions(_GLIBCXX_USE_C99_STDLIB=1)
+add_compile_options(-U__STRICT_ANSI__)

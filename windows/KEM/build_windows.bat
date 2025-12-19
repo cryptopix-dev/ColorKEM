@@ -44,8 +44,13 @@ REM 2. Find GCC and G++ (MinGW)
 REM ----------------------------------------------------------------------------
 echo Detecting GCC/G++...
 
-REM GCC
+REM GCC - Prefer MSYS2 GCC for better compatibility
 if defined GCC_FULL_PATH goto :verify_gcc
+if exist "C:\msys64\mingw64\bin\gcc.exe" (
+    set "GCC_FULL_PATH=C:\msys64\mingw64\bin\gcc.exe"
+    echo [INFO] Using MSYS2 GCC for better compatibility
+    goto :verify_gcc
+)
 where gcc >nul 2>nul
 if !errorlevel! equ 0 (
     for /f "tokens=*" %%i in ('where gcc') do (
@@ -72,6 +77,14 @@ echo [INFO] C Compiler: !GCC_FULL_PATH!
 
 REM G++
 if defined GXX_FULL_PATH goto :verify_gxx
+REM Prefer MSYS2 G++ if GCC is MSYS2
+if "!GCC_FULL_PATH!"=="C:\msys64\mingw64\bin\gcc.exe" (
+    if exist "C:\msys64\mingw64\bin\g++.exe" (
+        set "GXX_FULL_PATH=C:\msys64\mingw64\bin\g++.exe"
+        echo [INFO] Using MSYS2 G++ for consistency
+        goto :verify_gxx
+    )
+)
 where g++ >nul 2>nul
 if !errorlevel! equ 0 (
     for /f "tokens=*" %%i in ('where g++') do (

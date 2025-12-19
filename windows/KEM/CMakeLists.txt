@@ -11,6 +11,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # and enables GNU extensions like 'Q' suffix for high-precision floats (fixing the googletest issue).
 set(CMAKE_CXX_EXTENSIONS ON)
 
+# Additional fix for GCC 15.2.0 __STRICT_ANSI__ issue
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -U__STRICT_ANSI__")
+
 # Compiler flags will be set via toolchain file
 
 # Static linking settings will be set via toolchain file
@@ -27,8 +30,8 @@ endif()
 # set(OPENSSL_ROOT_DIR "C:/ProgramData/mingw64/mingw64/opt")
 set(OPENSSL_USE_STATIC_LIBS TRUE)
 
-# Automatically detect OpenSSL root based on compiler location to avoid mismatches
-if(WIN32 AND MINGW AND NOT DEFINED OPENSSL_ROOT_DIR)
+# Automatically detect toolchain root based on compiler location for cross-platform compatibility
+if(NOT DEFINED MINGW_TOOLCHAIN_ROOT)
     # Ensure we have the full path to the compiler
     if(NOT IS_ABSOLUTE "${CMAKE_C_COMPILER}")
        find_program(FULL_C_COMPILER_PATH ${CMAKE_C_COMPILER})
@@ -39,19 +42,22 @@ if(WIN32 AND MINGW AND NOT DEFINED OPENSSL_ROOT_DIR)
     if(FULL_C_COMPILER_PATH)
         get_filename_component(COMPILER_DIR ${FULL_C_COMPILER_PATH} DIRECTORY)
         get_filename_component(MINGW_TOOLCHAIN_ROOT ${COMPILER_DIR} DIRECTORY)
-        
-        # Check standard locations relative to the compiler toolchain
-        # This prevents picking up 'ProgramData' libs when using 'MSYS2' compiler, and vice-versa
-        if(EXISTS "${MINGW_TOOLCHAIN_ROOT}/include/openssl/ssl.h" OR EXISTS "${MINGW_TOOLCHAIN_ROOT}/lib/libcrypto.a")
-            message(STATUS "Auto-detected OpenSSL Root from Compiler Path: ${MINGW_TOOLCHAIN_ROOT}")
-            set(OPENSSL_ROOT_DIR ${MINGW_TOOLCHAIN_ROOT})
-        endif()
+        message(STATUS "Auto-detected Toolchain Root from Compiler Path: ${MINGW_TOOLCHAIN_ROOT}")
+    endif()
+endif()
+
+# Automatically detect OpenSSL root based on toolchain location to avoid mismatches
+if(NOT DEFINED OPENSSL_ROOT_DIR)
+    # Check standard locations relative to the compiler toolchain
+    if(EXISTS "${MINGW_TOOLCHAIN_ROOT}/include/openssl/ssl.h" OR EXISTS "${MINGW_TOOLCHAIN_ROOT}/lib/libcrypto.a")
+        message(STATUS "Auto-detected OpenSSL Root from Toolchain Path: ${MINGW_TOOLCHAIN_ROOT}")
+        set(OPENSSL_ROOT_DIR ${MINGW_TOOLCHAIN_ROOT})
     endif()
 endif()
 
 # Find zlib manually for OpenSSL
-find_path(ZLIB_INCLUDE_DIR zlib.h PATHS C:/ProgramData/mingw64/mingw64/include C:/msys64/mingw64/include)
-find_library(ZLIB_LIBRARY libz.a PATHS C:/ProgramData/mingw64/mingw64/lib C:/msys64/mingw64/lib)
+find_path(ZLIB_INCLUDE_DIR zlib.h PATHS ${MINGW_TOOLCHAIN_ROOT}/include /usr/include /usr/local/include)
+find_library(ZLIB_LIBRARY libz.a PATHS ${MINGW_TOOLCHAIN_ROOT}/lib /usr/lib /usr/local/lib)
 
 if(ZLIB_INCLUDE_DIR AND ZLIB_LIBRARY)
     set(ZLIB_FOUND TRUE)
@@ -64,11 +70,11 @@ endif()
 find_package(OpenSSL REQUIRED)
 
 # Find WebP manually - prefer static libraries
-find_path(WEBP_INCLUDE_DIR webp/types.h PATHS C:/ProgramData/mingw64/mingw64/include C:/msys64/mingw64/include)
-find_library(WEBP_LIBRARY libwebp.a PATHS C:/ProgramData/mingw64/mingw64/lib C:/msys64/mingw64/lib)
-find_library(WEBPDEMUX_LIBRARY libwebpdemux.a PATHS C:/ProgramData/mingw64/mingw64/lib C:/msys64/mingw64/lib)
-find_library(WEBPMUX_LIBRARY libwebpmux.a PATHS C:/ProgramData/mingw64/mingw64/lib C:/msys64/mingw64/lib)
-find_library(SHARPYUV_LIBRARY libsharpyuv.a PATHS C:/ProgramData/mingw64/mingw64/lib C:/msys64/mingw64/lib)
+find_path(WEBP_INCLUDE_DIR webp/types.h PATHS ${MINGW_TOOLCHAIN_ROOT}/include /usr/include /usr/local/include)
+find_library(WEBP_LIBRARY libwebp.a PATHS ${MINGW_TOOLCHAIN_ROOT}/lib /usr/lib /usr/local/lib)
+find_library(WEBPDEMUX_LIBRARY libwebpdemux.a PATHS ${MINGW_TOOLCHAIN_ROOT}/lib /usr/lib /usr/local/lib)
+find_library(WEBPMUX_LIBRARY libwebpmux.a PATHS ${MINGW_TOOLCHAIN_ROOT}/lib /usr/lib /usr/local/lib)
+find_library(SHARPYUV_LIBRARY libsharpyuv.a PATHS ${MINGW_TOOLCHAIN_ROOT}/lib /usr/lib /usr/local/lib)
 
 if(WEBP_INCLUDE_DIR AND WEBP_LIBRARY)
     set(WEBP_FOUND TRUE)
@@ -138,13 +144,10 @@ if(WIN32)
     
     # Find mingwex library once for all executables
     # This library provides vsnprintf and other standard C functions needed by OpenSSL
-    find_library(MINGWEX_LIBRARY 
+    find_library(MINGWEX_LIBRARY
         NAMES mingwex libmingwex
-        PATHS 
-            ${OPENSSL_ROOT_DIR}/lib
-            ${OPENSSL_ROOT_DIR}/../lib
-            C:/msys64/mingw64/lib
-            C:/ProgramData/mingw64/mingw64/lib
+        PATHS
+            ${MINGW_TOOLCHAIN_ROOT}/lib
         NO_DEFAULT_PATH
     )
     
