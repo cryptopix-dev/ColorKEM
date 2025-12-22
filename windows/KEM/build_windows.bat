@@ -44,6 +44,7 @@ REM 2. Find GCC and G++ (MinGW)
 REM ----------------------------------------------------------------------------
 echo Detecting GCC/G++...
 
+<<<<<<< Updated upstream
 REM GCC
 if defined GCC_FULL_PATH goto :verify_gcc
 where gcc >nul 2>nul
@@ -211,6 +212,19 @@ goto :openssl_done
 REM ----------------------------------------------------------------------------
 REM 4. Build Process
 REM ----------------------------------------------------------------------------
+=======
+REM Set compiler environment variables for CMake
+set "CC=C:/msys64/mingw64/bin/gcc.exe"
+set "CXX=C:/msys64/mingw64/bin/g++.exe"
+set "PATH=C:/msys64/mingw64/bin;%PATH%"
+set "PKG_CONFIG_EXECUTABLE=C:/msys64/usr/bin/pkg-config.exe"
+set "PKG_CONFIG_PATH=C:/msys64/mingw64/lib/pkgconfig;%PKG_CONFIG_PATH%"
+set "OPENSSL_ROOT_DIR=C:/msys64/mingw64/opt"
+
+REM Export environment variables for subprocesses
+setx CC "C:/msys64/mingw64/bin/gcc.exe"
+setx CXX "C:/msys64/mingw64/bin/g++.exe"
+>>>>>>> Stashed changes
 
 if exist "build" (
     echo Cleaning build directory...
@@ -224,6 +238,7 @@ set "GCC_FULL_PATH=!GCC_FULL_PATH:\=/!"
 set "GXX_FULL_PATH=!GXX_FULL_PATH:\=/!"
 
 echo Configuring project with CMake...
+<<<<<<< Updated upstream
 echo CMake Command: "!CMAKE_CMD!" .. -G "MinGW Makefiles" -DCMAKE_C_COMPILER="!GCC_FULL_PATH!" -DCMAKE_CXX_COMPILER="!GXX_FULL_PATH!" !OPENSSL_ARG!
 
 "!CMAKE_CMD!" .. -G "MinGW Makefiles" ^
@@ -234,6 +249,9 @@ echo CMake Command: "!CMAKE_CMD!" .. -G "MinGW Makefiles" -DCMAKE_C_COMPILER="!G
 
 
 
+=======
+cmake .. -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Release -DPKG_CONFIG_EXECUTABLE="C:/msys64/usr/bin/pkg-config.exe"
+>>>>>>> Stashed changes
 if %errorlevel% neq 0 (
     echo CMake configuration failed.
     exit /b 1

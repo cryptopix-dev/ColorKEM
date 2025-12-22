@@ -4,7 +4,6 @@
 #include <random>
 #include <chrono>
 #include <array>
-#include <algorithm>
 
 #ifdef HAVE_AVX512
 #include <immintrin.h>

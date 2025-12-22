@@ -4,7 +4,7 @@
 #include <functional>
 #include <algorithm>
 #include "clwe/clwe.hpp"
-#include "src/core/color_kem.hpp"
+#include "clwe/color_kem.hpp"
 #include "src/core/cpu_features.hpp"
 #include "src/core/performance_metrics.hpp"
 

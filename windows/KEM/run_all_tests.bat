@@ -5,7 +5,7 @@ setlocal enabledelayedexpansion
 :: This script runs all available tests
 
 :: Set MinGW PATH for DLLs
-set "PATH=C:/ProgramData/mingw64/mingw64/bin;%PATH%"
+set "PATH=C:/msys64/mingw64/bin;%PATH%"
 
 :: Test results
 set TOTAL_TESTS=0
@@ -32,7 +32,7 @@ echo ---------------------------
 if exist "build\tests\test_clwe_parameters.exe" (
     echo Running Parameters Test...
     build\tests\test_clwe_parameters.exe
-    if %errorlevel% equ 0 (
+    if !errorlevel! equ 0 (
         echo PASSED
         set /a PASSED_TESTS+=1
     ) else (
@@ -46,7 +46,7 @@ if exist "build\tests\test_clwe_parameters.exe" (
 if exist "build\tests\test_color_value.exe" (
     echo Running Color Value Test...
     build\tests\test_color_value.exe
-    if %errorlevel% equ 0 (
+    if !errorlevel! equ 0 (
         echo PASSED
         set /a PASSED_TESTS+=1
     ) else (
@@ -60,7 +60,7 @@ if exist "build\tests\test_color_value.exe" (
 if exist "build\tests\test_color_kem.exe" (
     echo Running Color KEM Test...
     build\tests\test_color_kem.exe
-    if %errorlevel% equ 0 (
+    if !errorlevel! equ 0 (
         echo PASSED
         set /a PASSED_TESTS+=1
     ) else (
@@ -74,7 +74,7 @@ if exist "build\tests\test_color_kem.exe" (
 if exist "build\tests\test_serialization.exe" (
     echo Running Serialization Test...
     build\tests\test_serialization.exe
-    if %errorlevel% equ 0 (
+    if !errorlevel! equ 0 (
         echo PASSED
         set /a PASSED_TESTS+=1
     ) else (
@@ -88,7 +88,7 @@ if exist "build\tests\test_serialization.exe" (
 if exist "build\tests\test_utils.exe" (
     echo Running Utils Test...
     build\tests\test_utils.exe
-    if %errorlevel% equ 0 (
+    if !errorlevel! equ 0 (
         echo PASSED
         set /a PASSED_TESTS+=1
     ) else (
@@ -102,7 +102,7 @@ if exist "build\tests\test_utils.exe" (
 if exist "build\tests\test_ntt_engine.exe" (
     echo Running NTT Engine Test...
     build\tests\test_ntt_engine.exe
-    if %errorlevel% equ 0 (
+    if !errorlevel! equ 0 (
         echo PASSED
         set /a PASSED_TESTS+=1
     ) else (
@@ -116,7 +116,7 @@ if exist "build\tests\test_ntt_engine.exe" (
 if exist "build\tests\test_sampling.exe" (
     echo Running Sampling Test...
     build\tests\test_sampling.exe
-    if %errorlevel% equ 0 (
+    if !errorlevel! equ 0 (
         echo PASSED
         set /a PASSED_TESTS+=1
     ) else (
@@ -130,7 +130,7 @@ if exist "build\tests\test_sampling.exe" (
 if exist "build\tests\test_integration_kem.exe" (
     echo Running Integration KEM Test...
     build\tests\test_integration_kem.exe
-    if %errorlevel% equ 0 (
+    if !errorlevel! equ 0 (
         echo PASSED
         set /a PASSED_TESTS+=1
     ) else (
@@ -144,7 +144,7 @@ if exist "build\tests\test_integration_kem.exe" (
 if exist "build\tests\test_known_answer_tests.exe" (
     echo Running KAT Test...
     build\tests\test_known_answer_tests.exe
-    if %errorlevel% equ 0 (
+    if !errorlevel! equ 0 (
         echo PASSED
         set /a PASSED_TESTS+=1
     ) else (
@@ -158,7 +158,7 @@ if exist "build\tests\test_known_answer_tests.exe" (
 if exist "build\tests\test_performance_metrics.exe" (
     echo Running Performance Metrics Test...
     build\tests\test_performance_metrics.exe
-    if %errorlevel% equ 0 (
+    if !errorlevel! equ 0 (
         echo PASSED
         set /a PASSED_TESTS+=1
     ) else (
@@ -172,7 +172,7 @@ if exist "build\tests\test_performance_metrics.exe" (
 if exist "build\test_key_images.exe" (
     echo Running Key Images Test...
     build\test_key_images.exe
-    if %errorlevel% equ 0 (
+    if !errorlevel! equ 0 (
         echo PASSED
         set /a PASSED_TESTS+=1
     ) else (

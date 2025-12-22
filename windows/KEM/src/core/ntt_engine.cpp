@@ -86,11 +86,13 @@ std::unique_ptr<NTTEngine> create_ntt_engine(SIMDSupport simd_support, uint32_t 
         case SIMDSupport::RVV:
             return std::make_unique<RVVNTTEngine>(q, n);
 #endif
-#ifdef HAVE_AVX2
-        // case SIMDSupport::AVX512:
-        // case SIMDSupport::AVX2:
-        //     return std::make_unique<AVXNTTEngine>(q, n);
-#endif
+// #ifdef HAVE_AVX2
+//         case SIMDSupport::AVX512:
+//         case SIMDSupport::AVX2:
+//             return std::make_unique<AVXNTTEngine>(q, n);
+// #endif
+        case SIMDSupport::AVX512:
+        case SIMDSupport::AVX2:
         case SIMDSupport::VSX:
         case SIMDSupport::NONE:
         default:

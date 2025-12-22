@@ -1,0 +1,1 @@
+ libclwe.a C:/msys64/mingw64/lib/libwebp.a C:/msys64/mingw64/lib/libwebpdemux.a C:/msys64/mingw64/lib/libwebpmux.a C:/msys64/mingw64/lib/libsharpyuv.a C:/msys64/mingw64/lib/libcrypto.a -lws2_32 C:/msys64/mingw64/lib/libz.a -lcrypt32 -lbcrypt -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32 

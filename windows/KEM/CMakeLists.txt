@@ -1,31 +1,85 @@
 cmake_minimum_required(VERSION 3.16)
 project(ColorKEM VERSION 1.0.0 LANGUAGES C CXX)
 
-# Toolchain will be set via external toolchain file
-
 # Compiler settings
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+<<<<<<< Updated upstream
 # Enable GNU extensions (uses -std=gnu++17 instead of -std=c++17)
 # This prevents __STRICT_ANSI__ from being defined (fixing the at_quick_exit issue)
 # and enables GNU extensions like 'Q' suffix for high-precision floats (fixing the googletest issue).
 set(CMAKE_CXX_EXTENSIONS ON)
+=======
+set(CMAKE_CXX_FLAGS_RELEASE "-O3")
+>>>>>>> Stashed changes
 
-# Compiler flags will be set via toolchain file
-
-# Static linking settings will be set via toolchain file
+# Multi-architecture SIMD detection and configuration
+include(CheckCXXCompilerFlag)
+include(CheckCXXSourceCompiles)
 
 # Windows-specific settings
 if(WIN32)
     add_definitions(-D_MINGW -DWIN32 -D_WIN32)
 endif()
 
-# SIMD optimization flags will be set via toolchain file
+# Architecture-specific SIMD detection
+if(CMAKE_SYSTEM_PROCESSOR MATCHES "(x86)|(X86)|(amd64)|(AMD64)|(x86_64)|(X86_64)")
+    # x86/x64 architecture - check for AVX support
+    check_cxx_compiler_flag("-mavx2" AVX2_SUPPORTED)
+    check_cxx_compiler_flag("-mfma" FMA_SUPPORTED)
+
+    if(AVX2_SUPPORTED)
+        add_compile_definitions(HAVE_AVX2)
+        add_compile_options(-mavx2)
+        if(FMA_SUPPORTED)
+            add_compile_options(-mfma)
+        endif()
+        message(STATUS "x86_64: AVX2 support detected and enabled")
+
+        # AVX-512 detection skipped for stability
+        message(STATUS "x86_64: AVX-512 detection skipped (using AVX2)")
+        # check_cxx_compiler_flag("-mavx512f" AVX512F_SUPPORTED)
+        # ...
+    else()
+        message(WARNING "x86_64: AVX2 not supported, using scalar fallback")
+        add_compile_definitions(NO_AVX_SUPPORT)
+    endif()
+
+elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "(aarch64)|(arm64)|(ARM64)")
+    # ARM64 architecture - check for NEON support
+    check_cxx_compiler_flag("-march=armv8-a+simd" NEON_SUPPORTED)
+    if(NEON_SUPPORTED)
+        add_compile_definitions(HAVE_NEON)
+        add_compile_options(-march=armv8-a+simd)
+        message(STATUS "ARM64: NEON SIMD support detected and enabled")
+    else()
+        message(WARNING "ARM64: NEON not supported, using scalar fallback")
+        add_compile_definitions(NO_SIMD_SUPPORT)
+    endif()
+
+else()
+    # Unknown architecture
+    message(STATUS "Unknown architecture ${CMAKE_SYSTEM_PROCESSOR}, using scalar fallback")
+    add_compile_definitions(NO_SIMD_SUPPORT)
+endif()
+
+# Cross-compilation support
+if(CMAKE_CROSSCOMPILING)
+    message(STATUS "Cross-compilation detected - SIMD features will be determined at runtime")
+    add_compile_definitions(CROSS_COMPILING)
+endif()
 
 # Dependencies - Use MinGW's built-in OpenSSL
+<<<<<<< Updated upstream
 # OPENSSL_ROOT_DIR should be passed from command line
 # set(OPENSSL_ROOT_DIR "C:/ProgramData/mingw64/mingw64/opt")
+=======
+set(OPENSSL_ROOT_DIR "C:/msys64/mingw64")
+>>>>>>> Stashed changes
 set(OPENSSL_USE_STATIC_LIBS TRUE)
+set(OPENSSL_INCLUDE_DIR "C:/msys64/mingw64/include")
+set(OPENSSL_CRYPTO_LIBRARY "C:/msys64/mingw64/lib/libcrypto.a")
+set(OPENSSL_SSL_LIBRARY "C:/msys64/mingw64/lib/libssl.a")
 
 # Automatically detect OpenSSL root based on compiler location to avoid mismatches
 if(WIN32 AND MINGW AND NOT DEFINED OPENSSL_ROOT_DIR)
@@ -50,8 +104,8 @@ if(WIN32 AND MINGW AND NOT DEFINED OPENSSL_ROOT_DIR)
 endif()
 
 # Find zlib manually for OpenSSL
-find_path(ZLIB_INCLUDE_DIR zlib.h PATHS C:/ProgramData/mingw64/mingw64/include C:/msys64/mingw64/include)
-find_library(ZLIB_LIBRARY libz.a PATHS C:/ProgramData/mingw64/mingw64/lib C:/msys64/mingw64/lib)
+find_path(ZLIB_INCLUDE_DIR zlib.h PATHS C:/msys64/mingw64/include)
+find_library(ZLIB_LIBRARY libz.a PATHS C:/msys64/mingw64/lib)
 
 if(ZLIB_INCLUDE_DIR AND ZLIB_LIBRARY)
     set(ZLIB_FOUND TRUE)
@@ -64,11 +118,11 @@ endif()
 find_package(OpenSSL REQUIRED)
 
 # Find WebP manually - prefer static libraries
-find_path(WEBP_INCLUDE_DIR webp/types.h PATHS C:/ProgramData/mingw64/mingw64/include C:/msys64/mingw64/include)
-find_library(WEBP_LIBRARY libwebp.a PATHS C:/ProgramData/mingw64/mingw64/lib C:/msys64/mingw64/lib)
-find_library(WEBPDEMUX_LIBRARY libwebpdemux.a PATHS C:/ProgramData/mingw64/mingw64/lib C:/msys64/mingw64/lib)
-find_library(WEBPMUX_LIBRARY libwebpmux.a PATHS C:/ProgramData/mingw64/mingw64/lib C:/msys64/mingw64/lib)
-find_library(SHARPYUV_LIBRARY libsharpyuv.a PATHS C:/ProgramData/mingw64/mingw64/lib C:/msys64/mingw64/lib)
+find_path(WEBP_INCLUDE_DIR webp/types.h PATHS C:/msys64/mingw64/include)
+find_library(WEBP_LIBRARY libwebp.a PATHS C:/msys64/mingw64/lib)
+find_library(WEBPDEMUX_LIBRARY libwebpdemux.a PATHS C:/msys64/mingw64/lib)
+find_library(WEBPMUX_LIBRARY libwebpmux.a PATHS C:/msys64/mingw64/lib)
+find_library(SHARPYUV_LIBRARY libsharpyuv.a PATHS C:/msys64/mingw64/lib)
 
 if(WEBP_INCLUDE_DIR AND WEBP_LIBRARY)
     set(WEBP_FOUND TRUE)
@@ -98,9 +152,14 @@ if(NOT GTest_FOUND)
     set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 
     # Set compiler for subproject before making it available
+<<<<<<< Updated upstream
     # CMAKE_C_COMPILER and CMAKE_CXX_COMPILER are passed from the main project
     # set(CMAKE_C_COMPILER "C:/ProgramData/mingw64/mingw64/bin/gcc.exe" CACHE FILEPATH "C compiler" FORCE)
     # set(CMAKE_CXX_COMPILER "C:/ProgramData/mingw64/mingw64/bin/g++.exe" CACHE FILEPATH "C++ compiler" FORCE)
+=======
+    set(CMAKE_C_COMPILER "C:/msys64/mingw64/bin/gcc.exe" CACHE FILEPATH "C compiler" FORCE)
+    set(CMAKE_CXX_COMPILER "C:/msys64/mingw64/bin/g++.exe" CACHE FILEPATH "C++ compiler" FORCE)
+>>>>>>> Stashed changes
 
     # Suppress CMake deprecation warnings from googletest
     set(CMAKE_POLICY_VERSION_MINIMUM 3.16)
@@ -125,6 +184,7 @@ add_library(clwe STATIC
     src/core/sampling.cpp
     src/core/utils.cpp
     src/core/performance_metrics.cpp
+    src/core/tiny_sha3.c
 )
 
 target_link_libraries(clwe PRIVATE OpenSSL::Crypto)
@@ -186,18 +246,21 @@ endif()
 
 # KEM demonstration - commented out as demo_kem.cpp is missing
 # add_executable(demo_kem demo_kem.cpp)
-# target_link_libraries(demo_kem PRIVATE clwe_macos)
+# target_link_libraries(demo_kem PRIVATE clwe)
 
 # Color KEM timing benchmark
 add_executable(benchmark_color_kem_timing benchmark_color_kem_timing.cpp)
 target_link_libraries(benchmark_color_kem_timing PRIVATE clwe)
 
+<<<<<<< Updated upstream
 # Windows-specific libraries for OpenSSL static linking
 if(WIN32)
     add_windows_openssl_libs(benchmark_color_kem_timing)
 endif()
 
 
+=======
+>>>>>>> Stashed changes
 if(WEBP_FOUND)
     # Key image generator executable
     add_executable(generate_key_images generate_key_images.cpp)
@@ -257,3 +320,22 @@ install(EXPORT ColorKEMTargets
     NAMESPACE ColorKEM::
     DESTINATION lib/cmake/ColorKEM
 )
+
+# Python bindings (optional)
+option(BUILD_PYTHON_BINDINGS "Build Python bindings" OFF)
+if(BUILD_PYTHON_BINDINGS)
+    add_subdirectory(python)
+endif()
+
+# Fuzzing support (libFuzzer)
+option(ENABLE_FUZZING "Enable fuzzing with libFuzzer" OFF)
+if(ENABLE_FUZZING)
+    if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+        message(STATUS "Enabling libFuzzer support")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=fuzzer")
+        set(CMAKE_LINKER_FLAGS "${CMAKE_LINKER_FLAGS} -fsanitize=fuzzer")
+    else()
+        message(WARNING "libFuzzer requires Clang compiler. Fuzzing disabled.")
+        set(ENABLE_FUZZING OFF)
+    endif()
+endif()

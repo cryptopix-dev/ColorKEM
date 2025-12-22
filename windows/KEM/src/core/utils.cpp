@@ -8,6 +8,10 @@
 #include <intrin.h>
 #endif
 
+#ifdef HAVE_AVX2
+#include <cpuid.h>
+#endif
+
 #ifdef __APPLE__
 #include <Security/SecRandom.h>
 #endif
@@ -165,7 +169,7 @@ template class AVXVector<avx_type>;
 template class AVXVector<double>;
 template class AVXVector<int>;
 #ifdef HAVE_AVX2
-template class AVXVector<__m256i>;
+// template class AVXVector<__m256i>;
 #endif
 
 // Utility functions
