@@ -121,6 +121,7 @@ TEST_F(PerformanceMetricsTest, MultipleIterations) {
         for (int i = 0; i < 10; ++i) {
             x += i * i;
         }
+        std::this_thread::sleep_for(std::chrono::microseconds(10));
     };
 
     // Test with different iteration counts

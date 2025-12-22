@@ -1,0 +1,498 @@
+Start testing: Dec 21 13:52 IST
+----------------------------------------------------------
+1/10 Testing: ColorValueTests
+1/10 Test: ColorValueTests
+Command: "/Users/siddhuchelluru/Documents/GitHub/ColorKEM/macos/KEM/build/tests/test_color_value"
+Directory: /Users/siddhuchelluru/Documents/GitHub/ColorKEM/macos/KEM/build/tests
+"ColorValueTests" start time: Dec 21 13:52 IST
+Output:
+----------------------------------------------------------
+Running main() from /Users/siddhuchelluru/Documents/GitHub/ColorKEM/macos/KEM/build/_deps/googletest-src/googletest/src/gtest_main.cc
+[==========] Running 13 tests from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 13 tests from ColorValueTest
+[ RUN      ] ColorValueTest.Constructor
+[       OK ] ColorValueTest.Constructor (0 ms)
+[ RUN      ] ColorValueTest.Equality
+[       OK ] ColorValueTest.Equality (0 ms)
+[ RUN      ] ColorValueTest.MathValueConversion
+[       OK ] ColorValueTest.MathValueConversion (0 ms)
+[ RUN      ] ColorValueTest.PreciseValueConversion
+[       OK ] ColorValueTest.PreciseValueConversion (0 ms)
+[ RUN      ] ColorValueTest.ModularArithmetic
+[       OK ] ColorValueTest.ModularArithmetic (0 ms)
+[ RUN      ] ColorValueTest.ModularArithmeticEdgeCases
+[       OK ] ColorValueTest.ModularArithmeticEdgeCases (0 ms)
+[ RUN      ] ColorValueTest.HSVConversion
+[       OK ] ColorValueTest.HSVConversion (0 ms)
+[ RUN      ] ColorValueTest.StringRepresentation
+[       OK ] ColorValueTest.StringRepresentation (0 ms)
+[ RUN      ] ColorValueTest.ColorOperations
+[       OK ] ColorValueTest.ColorOperations (0 ms)
+[ RUN      ] ColorValueTest.ModularReduction
+[       OK ] ColorValueTest.ModularReduction (0 ms)
+[ RUN      ] ColorValueTest.NEONOperations
+[       OK ] ColorValueTest.NEONOperations (0 ms)
+[ RUN      ] ColorValueTest.SIMDWrapperOperations
+[       OK ] ColorValueTest.SIMDWrapperOperations (0 ms)
+[ RUN      ] ColorValueTest.InvalidInputs
+[       OK ] ColorValueTest.InvalidInputs (0 ms)
+[----------] 13 tests from ColorValueTest (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 13 tests from 1 test suite ran. (0 ms total)
+[  PASSED  ] 13 tests.
+<end of output>
+Test time =   0.01 sec
+----------------------------------------------------------
+Test Passed.
+"ColorValueTests" end time: Dec 21 13:52 IST
+"ColorValueTests" time elapsed: 00:00:00
+----------------------------------------------------------
+
+2/10 Testing: CLWEParametersTests
+2/10 Test: CLWEParametersTests
+Command: "/Users/siddhuchelluru/Documents/GitHub/ColorKEM/macos/KEM/build/tests/test_clwe_parameters"
+Directory: /Users/siddhuchelluru/Documents/GitHub/ColorKEM/macos/KEM/build/tests
+"CLWEParametersTests" start time: Dec 21 13:52 IST
+Output:
+----------------------------------------------------------
+Running main() from /Users/siddhuchelluru/Documents/GitHub/ColorKEM/macos/KEM/build/_deps/googletest-src/googletest/src/gtest_main.cc
+[==========] Running 13 tests from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 13 tests from CLWEParametersTest
+[ RUN      ] CLWEParametersTest.ConstructorWithSecurityLevel
+[       OK ] CLWEParametersTest.ConstructorWithSecurityLevel (0 ms)
+[ RUN      ] CLWEParametersTest.CustomConstructor
+[       OK ] CLWEParametersTest.CustomConstructor (0 ms)
+[ RUN      ] CLWEParametersTest.ValidParameters
+[       OK ] CLWEParametersTest.ValidParameters (0 ms)
+[ RUN      ] CLWEParametersTest.InvalidSecurityLevel
+[       OK ] CLWEParametersTest.InvalidSecurityLevel (0 ms)
+[ RUN      ] CLWEParametersTest.InvalidDegree
+[       OK ] CLWEParametersTest.InvalidDegree (0 ms)
+[ RUN      ] CLWEParametersTest.InvalidModuleRank
+[       OK ] CLWEParametersTest.InvalidModuleRank (0 ms)
+[ RUN      ] CLWEParametersTest.InvalidModulus
+[       OK ] CLWEParametersTest.InvalidModulus (0 ms)
+[ RUN      ] CLWEParametersTest.InvalidEtaValues
+[       OK ] CLWEParametersTest.InvalidEtaValues (0 ms)
+[ RUN      ] CLWEParametersTest.PrimeChecking
+[       OK ] CLWEParametersTest.PrimeChecking (0 ms)
+[ RUN      ] CLWEParametersTest.PrimeEdgeCases
+[       OK ] CLWEParametersTest.PrimeEdgeCases (0 ms)
+[ RUN      ] CLWEParametersTest.ValidParameterCombinations
+[       OK ] CLWEParametersTest.ValidParameterCombinations (0 ms)
+[ RUN      ] CLWEParametersTest.ValidationInConstructor
+[       OK ] CLWEParametersTest.ValidationInConstructor (0 ms)
+[ RUN      ] CLWEParametersTest.CopyBehavior
+[       OK ] CLWEParametersTest.CopyBehavior (0 ms)
+[----------] 13 tests from CLWEParametersTest (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 13 tests from 1 test suite ran. (0 ms total)
+[  PASSED  ] 13 tests.
+<end of output>
+Test time =   0.01 sec
+----------------------------------------------------------
+Test Passed.
+"CLWEParametersTests" end time: Dec 21 13:52 IST
+"CLWEParametersTests" time elapsed: 00:00:00
+----------------------------------------------------------
+
+3/10 Testing: ColorKEMTests
+3/10 Test: ColorKEMTests
+Command: "/Users/siddhuchelluru/Documents/GitHub/ColorKEM/macos/KEM/build/tests/test_color_kem"
+Directory: /Users/siddhuchelluru/Documents/GitHub/ColorKEM/macos/KEM/build/tests
+"ColorKEMTests" start time: Dec 21 13:52 IST
+Output:
+----------------------------------------------------------
+Running main() from /Users/siddhuchelluru/Documents/GitHub/ColorKEM/macos/KEM/build/_deps/googletest-src/googletest/src/gtest_main.cc
+[==========] Running 21 tests from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 21 tests from ColorKEMTest
+[ RUN      ] ColorKEMTest.KeyGeneration
+[       OK ] ColorKEMTest.KeyGeneration (3 ms)
+[ RUN      ] ColorKEMTest.KeyVerification
+[       OK ] ColorKEMTest.KeyVerification (1 ms)
+[ RUN      ] ColorKEMTest.Encapsulation
+[       OK ] ColorKEMTest.Encapsulation (2 ms)
+[ RUN      ] ColorKEMTest.Decapsulation
+[       OK ] ColorKEMTest.Decapsulation (4 ms)
+[ RUN      ] ColorKEMTest.RoundTripConsistency
+[       OK ] ColorKEMTest.RoundTripConsistency (21 ms)
+[ RUN      ] ColorKEMTest.WrongPrivateKey
+[       OK ] ColorKEMTest.WrongPrivateKey (4 ms)
+[ RUN      ] ColorKEMTest.WrongPublicKey
+[       OK ] ColorKEMTest.WrongPublicKey (5 ms)
+[ RUN      ] ColorKEMTest.KeySerialization
+[       OK ] ColorKEMTest.KeySerialization (1 ms)
+[ RUN      ] ColorKEMTest.CiphertextSerialization
+[       OK ] ColorKEMTest.CiphertextSerialization (3 ms)
+[ RUN      ] ColorKEMTest.DifferentSecurityLevels
+[       OK ] ColorKEMTest.DifferentSecurityLevels (21 ms)
+[ RUN      ] ColorKEMTest.InvalidParameters
+[       OK ] ColorKEMTest.InvalidParameters (0 ms)
+[ RUN      ] ColorKEMTest.KeyVerificationMismatch
+[       OK ] ColorKEMTest.KeyVerificationMismatch (2 ms)
+[ RUN      ] ColorKEMTest.EncapsulationInvalidKey
+[       OK ] ColorKEMTest.EncapsulationInvalidKey (0 ms)
+[ RUN      ] ColorKEMTest.DecapsulationInvalidCiphertext
+[       OK ] ColorKEMTest.DecapsulationInvalidCiphertext (1 ms)
+[ RUN      ] ColorKEMTest.SharedSecretProperties
+[       OK ] ColorKEMTest.SharedSecretProperties (141 ms)
+[ RUN      ] ColorKEMTest.DifferentKeysDifferentCiphertexts
+[       OK ] ColorKEMTest.DifferentKeysDifferentCiphertexts (4 ms)
+[ RUN      ] ColorKEMTest.ColorIntegrationPublicKey
+[       OK ] ColorKEMTest.ColorIntegrationPublicKey (1 ms)
+[ RUN      ] ColorKEMTest.ColorIntegrationPrivateKey
+[       OK ] ColorKEMTest.ColorIntegrationPrivateKey (1 ms)
+[ RUN      ] ColorKEMTest.ColorIntegrationCiphertext
+[       OK ] ColorKEMTest.ColorIntegrationCiphertext (2 ms)
+[ RUN      ] ColorKEMTest.ColorIntegrationCompressed
+[       OK ] ColorKEMTest.ColorIntegrationCompressed (1 ms)
+[ RUN      ] ColorKEMTest.ColorIntegrationAutoCompression
+[       OK ] ColorKEMTest.ColorIntegrationAutoCompression (1 ms)
+[----------] 21 tests from ColorKEMTest (226 ms total)
+
+[----------] Global test environment tear-down
+[==========] 21 tests from 1 test suite ran. (226 ms total)
+[  PASSED  ] 21 tests.
+<end of output>
+Test time =   0.23 sec
+----------------------------------------------------------
+Test Passed.
+"ColorKEMTests" end time: Dec 21 13:52 IST
+"ColorKEMTests" time elapsed: 00:00:00
+----------------------------------------------------------
+
+4/10 Testing: SerializationTests
+4/10 Test: SerializationTests
+Command: "/Users/siddhuchelluru/Documents/GitHub/ColorKEM/macos/KEM/build/tests/test_serialization"
+Directory: /Users/siddhuchelluru/Documents/GitHub/ColorKEM/macos/KEM/build/tests
+"SerializationTests" start time: Dec 21 13:52 IST
+Output:
+----------------------------------------------------------
+Running main() from /Users/siddhuchelluru/Documents/GitHub/ColorKEM/macos/KEM/build/_deps/googletest-src/googletest/src/gtest_main.cc
+[==========] Running 12 tests from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 12 tests from SerializationTest
+[ RUN      ] SerializationTest.PublicKeySerializationRoundTrip
+[       OK ] SerializationTest.PublicKeySerializationRoundTrip (3 ms)
+[ RUN      ] SerializationTest.PrivateKeySerializationRoundTrip
+[       OK ] SerializationTest.PrivateKeySerializationRoundTrip (2 ms)
+[ RUN      ] SerializationTest.CiphertextSerializationRoundTrip
+[       OK ] SerializationTest.CiphertextSerializationRoundTrip (2 ms)
+[ RUN      ] SerializationTest.SerializedDataFunctional
+[       OK ] SerializationTest.SerializedDataFunctional (3 ms)
+[ RUN      ] SerializationTest.DifferentSecurityLevels
+[       OK ] SerializationTest.DifferentSecurityLevels (16 ms)
+[ RUN      ] SerializationTest.MalformedData
+[       OK ] SerializationTest.MalformedData (2 ms)
+[ RUN      ] SerializationTest.SerializationSize
+[       OK ] SerializationTest.SerializationSize (4 ms)
+[ RUN      ] SerializationTest.EdgeCaseParameters
+[       OK ] SerializationTest.EdgeCaseParameters (5 ms)
+[ RUN      ] SerializationTest.MultipleCycles
+[       OK ] SerializationTest.MultipleCycles (3 ms)
+[ RUN      ] SerializationTest.CrossVersionCompatibility
+[       OK ] SerializationTest.CrossVersionCompatibility (5 ms)
+[ RUN      ] SerializationTest.SerializationPerformance
+[       OK ] SerializationTest.SerializationPerformance (7 ms)
+[ RUN      ] SerializationTest.MemorySafety
+[       OK ] SerializationTest.MemorySafety (2 ms)
+[----------] 12 tests from SerializationTest (59 ms total)
+
+[----------] Global test environment tear-down
+[==========] 12 tests from 1 test suite ran. (59 ms total)
+[  PASSED  ] 12 tests.
+<end of output>
+Test time =   0.07 sec
+----------------------------------------------------------
+Test Passed.
+"SerializationTests" end time: Dec 21 13:52 IST
+"SerializationTests" time elapsed: 00:00:00
+----------------------------------------------------------
+
+5/10 Testing: UtilsTests
+5/10 Test: UtilsTests
+Command: "/Users/siddhuchelluru/Documents/GitHub/ColorKEM/macos/KEM/build/tests/test_utils"
+Directory: /Users/siddhuchelluru/Documents/GitHub/ColorKEM/macos/KEM/build/tests
+"UtilsTests" start time: Dec 21 13:52 IST
+Output:
+----------------------------------------------------------
+Running main() from /Users/siddhuchelluru/Documents/GitHub/ColorKEM/macos/KEM/build/_deps/googletest-src/googletest/src/gtest_main.cc
+[==========] Running 12 tests from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 12 tests from UtilsTest
+[ RUN      ] UtilsTest.TimestampFunctions
+[       OK ] UtilsTest.TimestampFunctions (1 ms)
+[ RUN      ] UtilsTest.MontgomeryReduction
+[       OK ] UtilsTest.MontgomeryReduction (0 ms)
+[ RUN      ] UtilsTest.BarrettReduction
+[       OK ] UtilsTest.BarrettReduction (0 ms)
+[ RUN      ] UtilsTest.BitOperations
+[       OK ] UtilsTest.BitOperations (0 ms)
+[ RUN      ] UtilsTest.ModularInverse
+[       OK ] UtilsTest.ModularInverse (0 ms)
+[ RUN      ] UtilsTest.ModularExponentiation
+[       OK ] UtilsTest.ModularExponentiation (0 ms)
+[ RUN      ] UtilsTest.SecureRandomBytes
+[       OK ] UtilsTest.SecureRandomBytes (0 ms)
+[ RUN      ] UtilsTest.AVXAllocator
+[       OK ] UtilsTest.AVXAllocator (0 ms)
+[ RUN      ] UtilsTest.AVXVector
+[       OK ] UtilsTest.AVXVector (0 ms)
+[ RUN      ] UtilsTest.AVXVectorMove
+[       OK ] UtilsTest.AVXVectorMove (0 ms)
+[ RUN      ] UtilsTest.AVXVectorTypes
+[       OK ] UtilsTest.AVXVectorTypes (0 ms)
+[ RUN      ] UtilsTest.AVXVectorBounds
+[       OK ] UtilsTest.AVXVectorBounds (0 ms)
+[----------] 12 tests from UtilsTest (1 ms total)
+
+[----------] Global test environment tear-down
+[==========] 12 tests from 1 test suite ran. (1 ms total)
+[  PASSED  ] 12 tests.
+<end of output>
+Test time =   0.01 sec
+----------------------------------------------------------
+Test Passed.
+"UtilsTests" end time: Dec 21 13:52 IST
+"UtilsTests" time elapsed: 00:00:00
+----------------------------------------------------------
+
+6/10 Testing: NTTEngineTests
+6/10 Test: NTTEngineTests
+Command: "/Users/siddhuchelluru/Documents/GitHub/ColorKEM/macos/KEM/build/tests/test_ntt_engine"
+Directory: /Users/siddhuchelluru/Documents/GitHub/ColorKEM/macos/KEM/build/tests
+"NTTEngineTests" start time: Dec 21 13:52 IST
+Output:
+----------------------------------------------------------
+Running main() from /Users/siddhuchelluru/Documents/GitHub/ColorKEM/macos/KEM/build/_deps/googletest-src/googletest/src/gtest_main.cc
+[==========] Running 13 tests from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 13 tests from NTTEngineTest
+[ RUN      ] NTTEngineTest.NTTRoundTrip
+[       OK ] NTTEngineTest.NTTRoundTrip (0 ms)
+[ RUN      ] NTTEngineTest.ColorNTTRoundTrip
+[       OK ] NTTEngineTest.ColorNTTRoundTrip (0 ms)
+[ RUN      ] NTTEngineTest.PolynomialMultiplication
+result[0] = 0
+result[1] = 256
+result[2] = 0
+result[3] = 0
+result[4] = 0
+result[5] = 0
+result[6] = 0
+result[7] = 0
+result[8] = 0
+result[9] = 0
+[       OK ] NTTEngineTest.PolynomialMultiplication (0 ms)
+[ RUN      ] NTTEngineTest.ColorPolynomialMultiplication
+[       OK ] NTTEngineTest.ColorPolynomialMultiplication (0 ms)
+[ RUN      ] NTTEngineTest.ConversionFunctions
+[       OK ] NTTEngineTest.ConversionFunctions (0 ms)
+[ RUN      ] NTTEngineTest.ColorConversionConsistency
+[       OK ] NTTEngineTest.ColorConversionConsistency (0 ms)
+[ RUN      ] NTTEngineTest.DifferentModuli
+[       OK ] NTTEngineTest.DifferentModuli (0 ms)
+[ RUN      ] NTTEngineTest.DifferentDegrees
+[       OK ] NTTEngineTest.DifferentDegrees (0 ms)
+[ RUN      ] NTTEngineTest.InvalidParameters
+[       OK ] NTTEngineTest.InvalidParameters (0 ms)
+[ RUN      ] NTTEngineTest.SIMDSupport
+[       OK ] NTTEngineTest.SIMDSupport (0 ms)
+[ RUN      ] NTTEngineTest.NTTLinearity
+[       OK ] NTTEngineTest.NTTLinearity (0 ms)
+[ RUN      ] NTTEngineTest.ColorNTTLinearity
+[       OK ] NTTEngineTest.ColorNTTLinearity (0 ms)
+[ RUN      ] NTTEngineTest.MultiplicationByMonomial
+[       OK ] NTTEngineTest.MultiplicationByMonomial (0 ms)
+[----------] 13 tests from NTTEngineTest (2 ms total)
+
+[----------] Global test environment tear-down
+[==========] 13 tests from 1 test suite ran. (2 ms total)
+[  PASSED  ] 13 tests.
+<end of output>
+Test time =   0.01 sec
+----------------------------------------------------------
+Test Passed.
+"NTTEngineTests" end time: Dec 21 13:52 IST
+"NTTEngineTests" time elapsed: 00:00:00
+----------------------------------------------------------
+
+7/10 Testing: SamplingTests
+7/10 Test: SamplingTests
+Command: "/Users/siddhuchelluru/Documents/GitHub/ColorKEM/macos/KEM/build/tests/test_sampling"
+Directory: /Users/siddhuchelluru/Documents/GitHub/ColorKEM/macos/KEM/build/tests
+"SamplingTests" start time: Dec 21 13:52 IST
+Output:
+----------------------------------------------------------
+Running main() from /Users/siddhuchelluru/Documents/GitHub/ColorKEM/macos/KEM/build/_deps/googletest-src/googletest/src/gtest_main.cc
+[==========] Running 13 tests from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 13 tests from SamplingTest
+[ RUN      ] SamplingTest.SHAKE256SamplerInit
+[       OK ] SamplingTest.SHAKE256SamplerInit (0 ms)
+[ RUN      ] SamplingTest.BinomialCoefficientSampling
+[       OK ] SamplingTest.BinomialCoefficientSampling (0 ms)
+[ RUN      ] SamplingTest.PolynomialBinomialSampling
+[       OK ] SamplingTest.PolynomialBinomialSampling (0 ms)
+[ RUN      ] SamplingTest.PolynomialUniformSampling
+[       OK ] SamplingTest.PolynomialUniformSampling (0 ms)
+[ RUN      ] SamplingTest.BatchBinomialSampling
+[       OK ] SamplingTest.BatchBinomialSampling (0 ms)
+[ RUN      ] SamplingTest.UniformSampling
+[       OK ] SamplingTest.UniformSampling (0 ms)
+[ RUN      ] SamplingTest.RandomBytes
+[       OK ] SamplingTest.RandomBytes (0 ms)
+[ RUN      ] SamplingTest.GlobalSamplingFunctions
+[       OK ] SamplingTest.GlobalSamplingFunctions (0 ms)
+[ RUN      ] SamplingTest.SHAKE128Sampler
+[       OK ] SamplingTest.SHAKE128Sampler (0 ms)
+[ RUN      ] SamplingTest.Reproducibility
+[       OK ] SamplingTest.Reproducibility (0 ms)
+[ RUN      ] SamplingTest.DifferentEtaValues
+[       OK ] SamplingTest.DifferentEtaValues (0 ms)
+[ RUN      ] SamplingTest.StatisticalProperties
+[       OK ] SamplingTest.StatisticalProperties (0 ms)
+[ RUN      ] SamplingTest.EdgeCases
+[       OK ] SamplingTest.EdgeCases (0 ms)
+[----------] 13 tests from SamplingTest (2 ms total)
+
+[----------] Global test environment tear-down
+[==========] 13 tests from 1 test suite ran. (2 ms total)
+[  PASSED  ] 13 tests.
+<end of output>
+Test time =   0.01 sec
+----------------------------------------------------------
+Test Passed.
+"SamplingTests" end time: Dec 21 13:52 IST
+"SamplingTests" time elapsed: 00:00:00
+----------------------------------------------------------
+
+8/10 Testing: IntegrationKEMTests
+8/10 Test: IntegrationKEMTests
+Command: "/Users/siddhuchelluru/Documents/GitHub/ColorKEM/macos/KEM/build/tests/test_integration_kem"
+Directory: /Users/siddhuchelluru/Documents/GitHub/ColorKEM/macos/KEM/build/tests
+"IntegrationKEMTests" start time: Dec 21 13:52 IST
+Output:
+----------------------------------------------------------
+Running main() from /Users/siddhuchelluru/Documents/GitHub/ColorKEM/macos/KEM/build/_deps/googletest-src/googletest/src/gtest_main.cc
+[==========] Running 8 tests from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 8 tests from ColorKEMIntegrationTest
+[ RUN      ] ColorKEMIntegrationTest.FullKEMRoundTrip
+[       OK ] ColorKEMIntegrationTest.FullKEMRoundTrip (16 ms)
+[ RUN      ] ColorKEMIntegrationTest.MultiPartyKeyExchange
+[       OK ] ColorKEMIntegrationTest.MultiPartyKeyExchange (14 ms)
+[ RUN      ] ColorKEMIntegrationTest.ErrorHandlingWorkflows
+[       OK ] ColorKEMIntegrationTest.ErrorHandlingWorkflows (5 ms)
+[ RUN      ] ColorKEMIntegrationTest.PerformanceValidation
+[       OK ] ColorKEMIntegrationTest.PerformanceValidation (207 ms)
+[ RUN      ] ColorKEMIntegrationTest.MemorySafetyLongRunning
+[       OK ] ColorKEMIntegrationTest.MemorySafetyLongRunning (3628 ms)
+[ RUN      ] ColorKEMIntegrationTest.ConcurrentKeyExchange
+[       OK ] ColorKEMIntegrationTest.ConcurrentKeyExchange (79 ms)
+[ RUN      ] ColorKEMIntegrationTest.SerializationWorkflow
+[       OK ] ColorKEMIntegrationTest.SerializationWorkflow (19 ms)
+[ RUN      ] ColorKEMIntegrationTest.BoundaryConditions
+[       OK ] ColorKEMIntegrationTest.BoundaryConditions (111 ms)
+[----------] 8 tests from ColorKEMIntegrationTest (4083 ms total)
+
+[----------] Global test environment tear-down
+[==========] 8 tests from 1 test suite ran. (4083 ms total)
+[  PASSED  ] 8 tests.
+<end of output>
+Test time =   4.09 sec
+----------------------------------------------------------
+Test Passed.
+"IntegrationKEMTests" end time: Dec 21 13:52 IST
+"IntegrationKEMTests" time elapsed: 00:00:04
+----------------------------------------------------------
+
+9/10 Testing: KnownAnswerTests
+9/10 Test: KnownAnswerTests
+Command: "/Users/siddhuchelluru/Documents/GitHub/ColorKEM/macos/KEM/build/tests/test_known_answer_tests"
+Directory: /Users/siddhuchelluru/Documents/GitHub/ColorKEM/macos/KEM/build/tests
+"KnownAnswerTests" start time: Dec 21 13:52 IST
+Output:
+----------------------------------------------------------
+Running main() from /Users/siddhuchelluru/Documents/GitHub/ColorKEM/macos/KEM/build/_deps/googletest-src/googletest/src/gtest_main.cc
+[==========] Running 4 tests from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 4 tests from ColorKEMKnownAnswerTest
+[ RUN      ] ColorKEMKnownAnswerTest.NIST_KAT_KeyGeneration512
+/Users/siddhuchelluru/Documents/GitHub/ColorKEM/macos/KEM/tests/test_known_answer_tests.cpp:39: Skipped
+NIST KAT vectors not available for ML-KEM-512
+[  SKIPPED ] ColorKEMKnownAnswerTest.NIST_KAT_KeyGeneration512 (1289 ms)
+[ RUN      ] ColorKEMKnownAnswerTest.NIST_KAT_Encapsulation512
+/Users/siddhuchelluru/Documents/GitHub/ColorKEM/macos/KEM/tests/test_known_answer_tests.cpp:66: Skipped
+NIST KAT vectors not available for ML-KEM-512
+[  SKIPPED ] ColorKEMKnownAnswerTest.NIST_KAT_Encapsulation512 (1162 ms)
+[ RUN      ] ColorKEMKnownAnswerTest.NIST_KAT_KeyGeneration768
+/Users/siddhuchelluru/Documents/GitHub/ColorKEM/macos/KEM/tests/test_known_answer_tests.cpp:104: Skipped
+NIST KAT vectors not available for ML-KEM-768
+[  SKIPPED ] ColorKEMKnownAnswerTest.NIST_KAT_KeyGeneration768 (1283 ms)
+[ RUN      ] ColorKEMKnownAnswerTest.NIST_KAT_KeyGeneration1024
+/Users/siddhuchelluru/Documents/GitHub/ColorKEM/macos/KEM/tests/test_known_answer_tests.cpp:129: Skipped
+NIST KAT vectors not available for ML-KEM-1024
+[  SKIPPED ] ColorKEMKnownAnswerTest.NIST_KAT_KeyGeneration1024 (1536 ms)
+[----------] 4 tests from ColorKEMKnownAnswerTest (5272 ms total)
+
+[----------] Global test environment tear-down
+[==========] 4 tests from 1 test suite ran. (5272 ms total)
+[  PASSED  ] 0 tests.
+[  SKIPPED ] 4 tests, listed below:
+[  SKIPPED ] ColorKEMKnownAnswerTest.NIST_KAT_KeyGeneration512
+[  SKIPPED ] ColorKEMKnownAnswerTest.NIST_KAT_Encapsulation512
+[  SKIPPED ] ColorKEMKnownAnswerTest.NIST_KAT_KeyGeneration768
+[  SKIPPED ] ColorKEMKnownAnswerTest.NIST_KAT_KeyGeneration1024
+<end of output>
+Test time =   5.28 sec
+----------------------------------------------------------
+Test Passed.
+"KnownAnswerTests" end time: Dec 21 13:52 IST
+"KnownAnswerTests" time elapsed: 00:00:05
+----------------------------------------------------------
+
+10/10 Testing: PerformanceMetricsTests
+10/10 Test: PerformanceMetricsTests
+Command: "/Users/siddhuchelluru/Documents/GitHub/ColorKEM/macos/KEM/build/tests/test_performance_metrics"
+Directory: /Users/siddhuchelluru/Documents/GitHub/ColorKEM/macos/KEM/build/tests
+"PerformanceMetricsTests" start time: Dec 21 13:52 IST
+Output:
+----------------------------------------------------------
+Running main() from /Users/siddhuchelluru/Documents/GitHub/ColorKEM/macos/KEM/build/_deps/googletest-src/googletest/src/gtest_main.cc
+[==========] Running 7 tests from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 7 tests from PerformanceMetricsTest
+[ RUN      ] PerformanceMetricsTest.GetMemoryUsage
+[       OK ] PerformanceMetricsTest.GetMemoryUsage (0 ms)
+[ RUN      ] PerformanceMetricsTest.TimeOperation
+[       OK ] PerformanceMetricsTest.TimeOperation (6 ms)
+[ RUN      ] PerformanceMetricsTest.TimeOperationWithMemory
+[       OK ] PerformanceMetricsTest.TimeOperationWithMemory (0 ms)
+[ RUN      ] PerformanceMetricsTest.TimeOperationCycles
+[       OK ] PerformanceMetricsTest.TimeOperationCycles (0 ms)
+[ RUN      ] PerformanceMetricsTest.MeasureOperation
+[       OK ] PerformanceMetricsTest.MeasureOperation (0 ms)
+[ RUN      ] PerformanceMetricsTest.EmptyOperation
+[       OK ] PerformanceMetricsTest.EmptyOperation (0 ms)
+[ RUN      ] PerformanceMetricsTest.MultipleIterations
+[       OK ] PerformanceMetricsTest.MultipleIterations (0 ms)
+[----------] 7 tests from PerformanceMetricsTest (6 ms total)
+
+[----------] Global test environment tear-down
+[==========] 7 tests from 1 test suite ran. (7 ms total)
+[  PASSED  ] 7 tests.
+<end of output>
+Test time =   0.02 sec
+----------------------------------------------------------
+Test Passed.
+"PerformanceMetricsTests" end time: Dec 21 13:52 IST
+"PerformanceMetricsTests" time elapsed: 00:00:00
+----------------------------------------------------------
+
+End testing: Dec 21 13:52 IST

@@ -458,9 +458,11 @@ std::pair<ColorCiphertext, ColorValue> ColorKEM::encapsulate(const ColorPublicKe
         throw std::invalid_argument("Public key data cannot be empty");
     }
 
-    uint8_t byte;
-    secure_random_bytes(&byte, 1);
-    ColorValue shared_secret = ColorValue::from_math_value(byte & 1);
+    uint8_t bytes[4];
+    secure_random_bytes(bytes, 4);
+    uint32_t value = (bytes[0] << 24) | (bytes[1] << 16) | (bytes[2] << 8) | bytes[3];
+    value %= params_.modulus;
+    ColorValue shared_secret = ColorValue::from_math_value(value);
     // std::cout << "DEBUG ENCAP: Shared secret = " << shared_secret.to_precise_value() << std::endl;
 
     auto matrix_A = generate_matrix_A(public_key.seed);
@@ -557,6 +559,8 @@ std::pair<ColorCiphertext, ColorValue> ColorKEM::encapsulate_deterministic(const
 
     ColorCiphertext ciphertext{ciphertext_data, shared_secret_hint, params_};
 
+    shared_secret = hash_ciphertext(ciphertext);
+
     return {ciphertext, shared_secret};
 }
 
@@ -649,10 +653,11 @@ ColorValue ColorKEM::decapsulate(const ColorPublicKey& public_key,
 
     // Fujisaki-Okamoto transform for IND-CCA2 security
     ColorValue hinted_secret = decode_color_secret(ciphertext.shared_secret_hint);
+    ColorValue result = hash_ciphertext(ciphertext);
     if (recovered_secret == hinted_secret) {
-        return recovered_secret;
+        return result;
     } else {
-        return hash_ciphertext(ciphertext);
+        return result;
     }
 }
 

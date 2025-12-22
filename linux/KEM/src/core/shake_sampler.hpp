@@ -12,8 +12,6 @@ namespace clwe {
 class SHAKE128Sampler {
 private:
     EVP_MD_CTX* ctx_;
-    std::vector<uint8_t> output_buffer_;
-    size_t output_pos_;
 
     // SHAKE-128 internal state
     void reset();
@@ -32,8 +30,6 @@ public:
 // SHAKE-256 based sampler for Kyber/ML-KEM
 class SHAKE256Sampler {
 private:
-    std::vector<uint8_t> output_buffer_;
-    size_t output_pos_;
     EVP_MD_CTX* ctx_;
 
     // SHAKE-256 internal state

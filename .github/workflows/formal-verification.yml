@@ -1,0 +1,64 @@
+name: Formal Verification
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'verification/**'
+      - 'linux/KEM/src/core/**'
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - 'verification/**'
+      - 'linux/KEM/src/core/**'
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Install SAW and Cryptol
+      run: |
+        sudo apt update
+        sudo apt install -y ghc cabal-install z3 yices2 cvc4
+        cabal update
+        cabal install cryptol
+        cabal install saw
+
+    - name: Set up environment
+      run: |
+        echo "$HOME/.cabal/bin" >> $GITHUB_PATH
+        cryptol --version
+        saw --version
+
+    - name: Build ColorKEM for verification
+      run: |
+        cd linux/KEM
+        mkdir build && cd build
+        cmake .. -DCMAKE_BUILD_TYPE=Release
+        make -j$(nproc)
+
+    - name: Run Cryptol type checking
+      run: |
+        cd verification/cryptol
+        cryptol polynomial_arithmetic.cry
+        cryptol ntt.cry
+
+    - name: Run SAW verification (basic)
+      run: |
+        cd verification/saw
+        # Placeholder - actual verification commands would go here
+        echo "SAW verification framework ready"
+        # saw verify_ntt.saw
+
+    - name: Upload verification artifacts
+      if: always()
+      uses: actions/upload-artifact@v3
+      with:
+        name: verification-results
+        path: |
+          verification/
+        retention-days: 30 

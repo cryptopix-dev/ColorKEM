@@ -1,0 +1,26 @@
+// Basic polynomial arithmetic specifications for ColorKEM verification
+// This file contains Cryptol specifications for polynomial operations over finite fields
+
+// Modulus for Kyber (example)
+q = 3329  // Prime modulus
+
+// Type for coefficients
+type Coeff = [32]  // 32-bit coefficients
+
+// Modular addition
+add_mod : Coeff -> Coeff -> Coeff
+add_mod a b = (a + b) % q
+
+// Modular subtraction
+sub_mod : Coeff -> Coeff -> Coeff
+sub_mod a b = (a - b) % q
+
+// Modular multiplication
+mul_mod : Coeff -> Coeff -> Coeff
+mul_mod a b = (a * b) % q
+
+// Example usage
+example_add = add_mod 100 200
+example_mul = mul_mod 10 20
+
+// Note: This is a basic specification. Full polynomial operations would be more complex.
