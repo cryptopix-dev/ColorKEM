@@ -7,48 +7,48 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../src/core)
 
 # Test executables
 add_executable(test_color_value test_color_value.cpp)
-target_link_libraries(test_color_value PRIVATE clwe_macos gtest_main)
+target_link_libraries(test_color_value PRIVATE clwe_linux gtest_main)
 
 add_executable(test_clwe_parameters test_clwe_parameters.cpp)
-target_link_libraries(test_clwe_parameters PRIVATE clwe_macos gtest_main)
+target_link_libraries(test_clwe_parameters PRIVATE clwe_linux gtest_main)
 
 add_executable(test_color_kem test_color_kem.cpp)
-target_link_libraries(test_color_kem PRIVATE clwe_macos gtest_main)
+target_link_libraries(test_color_kem PRIVATE clwe_linux gtest_main)
 
 add_executable(test_serialization test_serialization.cpp)
-target_link_libraries(test_serialization PRIVATE clwe_macos gtest_main)
+target_link_libraries(test_serialization PRIVATE clwe_linux gtest_main)
 
 add_executable(test_utils test_utils.cpp)
-target_link_libraries(test_utils PRIVATE clwe_macos gtest_main)
+target_link_libraries(test_utils PRIVATE clwe_linux gtest_main)
 
 add_executable(test_ntt_engine test_ntt_engine.cpp)
-target_link_libraries(test_ntt_engine PRIVATE clwe_macos gtest_main)
+target_link_libraries(test_ntt_engine PRIVATE clwe_linux gtest_main)
 
 add_executable(test_sampling test_sampling.cpp)
-target_link_libraries(test_sampling PRIVATE clwe_macos gtest_main)
+target_link_libraries(test_sampling PRIVATE clwe_linux gtest_main)
 
 add_executable(test_integration_kem test_integration_kem.cpp)
-target_link_libraries(test_integration_kem PRIVATE clwe_macos gtest_main)
+target_link_libraries(test_integration_kem PRIVATE clwe_linux gtest_main)
 
-add_executable(test_known_answer_tests test_known_answer_tests.cpp)
-target_link_libraries(test_known_answer_tests PRIVATE clwe_macos gtest_main)
+add_executable(test_known_answer_tests test_known_answer_tests.cpp nist_kat_parser.cpp)
+target_link_libraries(test_known_answer_tests PRIVATE clwe_linux gtest_main curl)
 
 add_executable(test_performance_metrics test_performance_metrics.cpp)
-target_link_libraries(test_performance_metrics PRIVATE clwe_macos gtest_main)
+target_link_libraries(test_performance_metrics PRIVATE clwe_linux gtest_main)
 
 # Fuzzing targets (only if fuzzing is enabled)
 if(ENABLE_FUZZING)
     add_executable(fuzz_input_validation fuzz/fuzz_input_validation.cpp)
-    target_link_libraries(fuzz_input_validation PRIVATE clwe_macos)
+    target_link_libraries(fuzz_input_validation PRIVATE clwe_linux)
 
     add_executable(fuzz_serialization fuzz/fuzz_serialization.cpp)
-    target_link_libraries(fuzz_serialization PRIVATE clwe_macos)
+    target_link_libraries(fuzz_serialization PRIVATE clwe_linux)
 
     add_executable(fuzz_kem_operations fuzz/fuzz_kem_operations.cpp)
-    target_link_libraries(fuzz_kem_operations PRIVATE clwe_macos)
+    target_link_libraries(fuzz_kem_operations PRIVATE clwe_linux)
 
     add_executable(fuzz_edge_cases fuzz/fuzz_edge_cases.cpp)
-    target_link_libraries(fuzz_edge_cases PRIVATE clwe_macos)
+    target_link_libraries(fuzz_edge_cases PRIVATE clwe_linux)
 endif()
 
 # Register tests

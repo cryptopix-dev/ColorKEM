@@ -37,15 +37,12 @@ void SHAKE256Sampler::init(const uint8_t* seed, size_t seed_len) {
     if (EVP_DigestUpdate(ctx_, seed, seed_len) != 1) {
         throw std::runtime_error("Failed to absorb seed into SHAKE-256");
     }
-    output_buffer_.resize(10 * 1024 * 1024); // 10MB buffer
-    if (EVP_DigestFinalXOF(ctx_, output_buffer_.data(), output_buffer_.size()) != 1) {
-        throw std::runtime_error("Failed to finalize SHAKE-256");
-    }
-    output_pos_ = 0;
 }
 
 void SHAKE256Sampler::squeeze(uint8_t* out, size_t len) {
-    random_bytes(out, len);
+    if (EVP_DigestSqueeze(ctx_, out, len) != 1) {
+        throw std::runtime_error("Failed to squeeze from SHAKE-256");
+    }
 }
 
 void SHAKE256Sampler::random_bytes(uint8_t* out, size_t len) {
@@ -153,19 +150,12 @@ void SHAKE128Sampler::init(const uint8_t* seed, size_t seed_len) {
     if (EVP_DigestUpdate(ctx_, seed, seed_len) != 1) {
         throw std::runtime_error("Failed to absorb seed into SHAKE-128");
     }
-    output_buffer_.resize(10 * 1024 * 1024); // 10MB buffer
-    if (EVP_DigestFinalXOF(ctx_, output_buffer_.data(), output_buffer_.size()) != 1) {
-        throw std::runtime_error("Failed to finalize SHAKE-128");
-    }
-    output_pos_ = 0;
 }
 
 void SHAKE128Sampler::squeeze(uint8_t* out, size_t len) {
-    if (output_pos_ + len > output_buffer_.size()) {
-        throw std::runtime_error("Not enough precomputed output");
+    if (EVP_DigestSqueeze(ctx_, out, len) != 1) {
+        throw std::runtime_error("Failed to squeeze from SHAKE-128");
     }
-    memcpy(out, output_buffer_.data() + output_pos_, len);
-    output_pos_ += len;
 }
 
 } // namespace clwe

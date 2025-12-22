@@ -1,0 +1,47 @@
+// Basic NTT (Number Theoretic Transform) specification for ColorKEM
+// This provides a high-level specification of the NTT algorithm
+
+// Import polynomial arithmetic
+import "polynomial_arithmetic.cry"
+
+// Primitive root of unity
+g : Coeff = 17  // For q=3329
+
+// Compute zeta = g^((q-1)/n) mod q
+zeta : Coeff = mod_pow g ((q-1)/n) q
+
+// Precompute zetas for NTT
+zetas : [n]Coeff
+zetas = [1] # [mul_mod zetas[i-1] zeta | i <- [1..n-1]]
+
+// Bit reversal permutation (for NTT ordering)
+bitrev : [n][8]  // Assuming n=256, logn=8
+bitrev = [ reverse_bits i | i <- [0..n-1] ]
+
+// Helper function for bit reversal (simplified)
+reverse_bits : [8] -> [8]
+reverse_bits x = x  // Placeholder - actual implementation needed
+
+// NTT forward transform (simplified specification)
+ntt_forward : Poly -> Poly
+ntt_forward poly = poly  // Placeholder - full Cooley-Tukey implementation needed
+
+// NTT inverse transform
+ntt_inverse : Poly -> Poly
+ntt_inverse poly = poly  // Placeholder
+
+// Polynomial multiplication using NTT
+poly_mul_ntt : Poly -> Poly -> Poly
+poly_mul_ntt a b = ntt_inverse (pointwise_mul (ntt_forward a) (ntt_forward b))
+  where pointwise_mul x y = [mul_mod x[i] y[i] | i <- [0..n-1]]
+
+// Montgomery reduction (simplified)
+montgomery_reduce : [64] -> Coeff
+montgomery_reduce x = x % q  // Placeholder
+
+// Modular exponentiation
+mod_pow : Coeff -> Coeff -> Coeff -> Coeff
+mod_pow base exp mod = base ^ exp % mod  // In Cryptol, ^ is exponentiation
+
+// Note: This is a basic framework. Full implementation requires detailed
+// Cooley-Tukey algorithm and proper Montgomery arithmetic.

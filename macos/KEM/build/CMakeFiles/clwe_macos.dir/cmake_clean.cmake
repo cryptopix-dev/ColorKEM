@@ -1,0 +1,39 @@
+file(REMOVE_RECURSE
+  "CMakeFiles/clwe_macos.dir/src/core/color_integration.cpp.o"
+  "CMakeFiles/clwe_macos.dir/src/core/color_integration.cpp.o.d"
+  "CMakeFiles/clwe_macos.dir/src/core/color_kem.cpp.o"
+  "CMakeFiles/clwe_macos.dir/src/core/color_kem.cpp.o.d"
+  "CMakeFiles/clwe_macos.dir/src/core/color_ntt_engine.cpp.o"
+  "CMakeFiles/clwe_macos.dir/src/core/color_ntt_engine.cpp.o.d"
+  "CMakeFiles/clwe_macos.dir/src/core/color_value.cpp.o"
+  "CMakeFiles/clwe_macos.dir/src/core/color_value.cpp.o.d"
+  "CMakeFiles/clwe_macos.dir/src/core/cpu_features.cpp.o"
+  "CMakeFiles/clwe_macos.dir/src/core/cpu_features.cpp.o.d"
+  "CMakeFiles/clwe_macos.dir/src/core/ntt_engine.cpp.o"
+  "CMakeFiles/clwe_macos.dir/src/core/ntt_engine.cpp.o.d"
+  "CMakeFiles/clwe_macos.dir/src/core/ntt_neon.cpp.o"
+  "CMakeFiles/clwe_macos.dir/src/core/ntt_neon.cpp.o.d"
+  "CMakeFiles/clwe_macos.dir/src/core/ntt_scalar.cpp.o"
+  "CMakeFiles/clwe_macos.dir/src/core/ntt_scalar.cpp.o.d"
+  "CMakeFiles/clwe_macos.dir/src/core/parameters.cpp.o"
+  "CMakeFiles/clwe_macos.dir/src/core/parameters.cpp.o.d"
+  "CMakeFiles/clwe_macos.dir/src/core/performance_metrics.cpp.o"
+  "CMakeFiles/clwe_macos.dir/src/core/performance_metrics.cpp.o.d"
+  "CMakeFiles/clwe_macos.dir/src/core/performance_metrics_macos.cpp.o"
+  "CMakeFiles/clwe_macos.dir/src/core/performance_metrics_macos.cpp.o.d"
+  "CMakeFiles/clwe_macos.dir/src/core/sampling.cpp.o"
+  "CMakeFiles/clwe_macos.dir/src/core/sampling.cpp.o.d"
+  "CMakeFiles/clwe_macos.dir/src/core/shake_sampler.cpp.o"
+  "CMakeFiles/clwe_macos.dir/src/core/shake_sampler.cpp.o.d"
+  "CMakeFiles/clwe_macos.dir/src/core/tiny_sha3.c.o"
+  "CMakeFiles/clwe_macos.dir/src/core/tiny_sha3.c.o.d"
+  "CMakeFiles/clwe_macos.dir/src/core/utils.cpp.o"
+  "CMakeFiles/clwe_macos.dir/src/core/utils.cpp.o.d"
+  "libclwe_macos.a"
+  "libclwe_macos.pdb"
+)
+
+# Per-language clean rules from dependency scanning.
+foreach(lang C CXX)
+  include(CMakeFiles/clwe_macos.dir/cmake_clean_${lang}.cmake OPTIONAL)
+endforeach()

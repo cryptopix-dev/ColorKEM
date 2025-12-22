@@ -213,6 +213,15 @@ struct ColorValue {
      * Outputs the color's string representation followed by a newline.
      */
     void print() const { std::cout << to_string() << std::endl; }
+
+    /**
+     * @brief Serialize color value to bytes
+     *
+     * For KAT compatibility, returns SHAKE256 hash of the color components.
+     *
+     * @return std::vector<uint8_t> 32-byte serialized representation
+     */
+    std::vector<uint8_t> serialize() const;
 };
 
 /**

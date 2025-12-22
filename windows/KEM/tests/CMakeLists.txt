@@ -30,8 +30,8 @@ target_link_libraries(test_sampling PRIVATE clwe gtest_main)
 add_executable(test_integration_kem test_integration_kem.cpp)
 target_link_libraries(test_integration_kem PRIVATE clwe gtest_main)
 
-add_executable(test_known_answer_tests test_known_answer_tests.cpp)
-target_link_libraries(test_known_answer_tests PRIVATE clwe gtest_main)
+add_executable(test_known_answer_tests test_known_answer_tests.cpp nist_kat_parser.cpp)
+target_link_libraries(test_known_answer_tests PRIVATE clwe gtest_main curl)
 
 add_executable(test_performance_metrics test_performance_metrics.cpp)
 target_link_libraries(test_performance_metrics PRIVATE clwe gtest_main)
