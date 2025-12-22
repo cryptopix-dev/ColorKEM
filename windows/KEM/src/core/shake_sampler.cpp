@@ -4,7 +4,9 @@
 #include <algorithm>
 #include <random>
 #include <stdexcept>
+#ifndef _MSC_VER
 #include <openssl/evp.h>
+#endif
 
 #ifdef _MSC_VER
 #include <intrin.h>
@@ -13,23 +15,38 @@
 namespace clwe {
 
 SHAKE256Sampler::SHAKE256Sampler() {
+#ifdef _MSC_VER
+    shake256_init(&ctx_);
+#else
     ctx_ = EVP_MD_CTX_new();
     if (!ctx_) {
         throw std::runtime_error("Failed to create EVP_MD_CTX");
     }
+#endif
 }
 
 SHAKE256Sampler::~SHAKE256Sampler() {
+#ifndef _MSC_VER
     if (ctx_) {
         EVP_MD_CTX_free(ctx_);
     }
+#endif
 }
 
 void SHAKE256Sampler::reset() {
+#ifdef _MSC_VER
+    shake256_init(&ctx_);
+#else
     EVP_MD_CTX_reset(ctx_);
+#endif
 }
 
 void SHAKE256Sampler::init(const uint8_t* seed, size_t seed_len) {
+#ifdef _MSC_VER
+    shake256_init(&ctx_);
+    shake_update(&ctx_, seed, seed_len);
+    shake_xof(&ctx_);
+#else
     reset();
     if (EVP_DigestInit_ex(ctx_, EVP_shake256(), NULL) != 1) {
         throw std::runtime_error("Failed to initialize SHAKE-256");
@@ -37,12 +54,17 @@ void SHAKE256Sampler::init(const uint8_t* seed, size_t seed_len) {
     if (EVP_DigestUpdate(ctx_, seed, seed_len) != 1) {
         throw std::runtime_error("Failed to absorb seed into SHAKE-256");
     }
+#endif
 }
 
 void SHAKE256Sampler::squeeze(uint8_t* out, size_t len) {
+#ifdef _MSC_VER
+    shake_out(&ctx_, out, len);
+#else
     if (EVP_DigestSqueeze(ctx_, out, len) != 1) {
         throw std::runtime_error("Failed to squeeze from SHAKE-256");
     }
+#endif
 }
 
 void SHAKE256Sampler::random_bytes(uint8_t* out, size_t len) {
@@ -122,23 +144,38 @@ void SHAKE256Sampler::sample_polynomial_uniform(uint32_t* coeffs, size_t degree,
 
 // SHAKE128Sampler implementation for Kyber matrix generation
 SHAKE128Sampler::SHAKE128Sampler() {
+#ifdef _MSC_VER
+    shake128_init(&ctx_);
+#else
     ctx_ = EVP_MD_CTX_new();
     if (!ctx_) {
         throw std::runtime_error("Failed to create EVP_MD_CTX for SHAKE-128");
     }
+#endif
 }
 
 SHAKE128Sampler::~SHAKE128Sampler() {
+#ifndef _MSC_VER
     if (ctx_) {
         EVP_MD_CTX_free(ctx_);
     }
+#endif
 }
 
 void SHAKE128Sampler::reset() {
+#ifdef _MSC_VER
+    shake128_init(&ctx_);
+#else
     EVP_MD_CTX_reset(ctx_);
+#endif
 }
 
 void SHAKE128Sampler::init(const uint8_t* seed, size_t seed_len) {
+#ifdef _MSC_VER
+    shake128_init(&ctx_);
+    shake_update(&ctx_, seed, seed_len);
+    shake_xof(&ctx_);
+#else
     reset();
     if (EVP_DigestInit_ex(ctx_, EVP_shake128(), NULL) != 1) {
         throw std::runtime_error("Failed to initialize SHAKE-128");
@@ -146,12 +183,17 @@ void SHAKE128Sampler::init(const uint8_t* seed, size_t seed_len) {
     if (EVP_DigestUpdate(ctx_, seed, seed_len) != 1) {
         throw std::runtime_error("Failed to absorb seed into SHAKE-128");
     }
+#endif
 }
 
 void SHAKE128Sampler::squeeze(uint8_t* out, size_t len) {
+#ifdef _MSC_VER
+    shake_out(&ctx_, out, len);
+#else
     if (EVP_DigestSqueeze(ctx_, out, len) != 1) {
         throw std::runtime_error("Failed to squeeze from SHAKE-128");
     }
+#endif
 }
 
 } // namespace clwe

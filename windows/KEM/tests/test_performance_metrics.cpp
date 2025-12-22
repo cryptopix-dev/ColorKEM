@@ -53,7 +53,7 @@ TEST_F(PerformanceMetricsTest, TimeOperationWithMemory) {
     MemoryStats mem_stats;
     TimingStats timing = PerformanceMetrics::time_operation_with_memory(operation, mem_stats, 10);
 
-    EXPECT_GE(timing.average_time, 0);
+    EXPECT_GT(timing.average_time, 0);
     EXPECT_GE(mem_stats.current_memory, 0);
     EXPECT_GE(mem_stats.peak_memory, 0);
     EXPECT_GE(mem_stats.average_memory, 0);
@@ -89,7 +89,7 @@ TEST_F(PerformanceMetricsTest, MeasureOperation) {
     auto stats = PerformanceMetrics::measure_operation(operation, 5);
 
     // Check timing stats
-    EXPECT_GE(stats.timing.average_time, 0);
+    EXPECT_GT(stats.timing.average_time, 0);
     EXPECT_GT(stats.timing.throughput, 0);
 
     // Check memory stats

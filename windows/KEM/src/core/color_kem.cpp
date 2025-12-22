@@ -1,7 +1,7 @@
-#include "clwe/color_kem.hpp"
+#include "color_kem.hpp"
 #include "shake_sampler.hpp"
 #include "utils.hpp"
-#include "clwe/color_integration.hpp"
+#include "../include/clwe/color_integration.hpp"
 #include <random>
 #include <cstring>
 #include <algorithm>
@@ -402,6 +402,29 @@ std::pair<ColorPublicKey, ColorPrivateKey> ColorKEM::keygen() {
     return {public_key, private_key};
 }
 
+std::pair<ColorPublicKey, ColorPrivateKey> ColorKEM::generate_keypair_optimized() {
+
+    std::array<uint8_t, 32> matrix_seed;
+    secure_random_bytes(matrix_seed.data(), matrix_seed.size());
+
+    auto matrix_A = generate_matrix_A(matrix_seed);
+
+    auto secret_key_colors = generate_secret_key(params_.eta1);
+
+    auto error_vector = generate_error_vector(params_.eta1);
+
+    auto public_key_colors = generate_public_key(secret_key_colors, matrix_A, error_vector);
+
+    // Use compressed serialization for optimized keys
+    auto secret_data = encode_polynomial_vector_as_colors_compressed(secret_key_colors, params_.modulus);
+    auto public_data = encode_polynomial_vector_as_colors_compressed(public_key_colors, params_.modulus);
+
+    ColorPublicKey public_key{matrix_seed, public_data, params_, true};
+    ColorPrivateKey private_key{secret_data, params_, true};
+
+    return {public_key, private_key};
+}
+
 std::pair<ColorPublicKey, ColorPrivateKey> ColorKEM::keygen_deterministic(const std::array<uint8_t, 32>& matrix_seed,
                                                                        const std::array<uint8_t, 32>& secret_seed,
                                                                        const std::array<uint8_t, 32>& error_seed) {
@@ -448,12 +471,7 @@ std::pair<ColorCiphertext, ColorValue> ColorKEM::encapsulate(const ColorPublicKe
         throw std::invalid_argument("Public key parameters do not match KEM instance parameters");
     }
 
-    // Validate public key data size
-    if (public_key.public_data.size() != params_.module_rank * params_.degree * 4) {
-        throw std::invalid_argument("Invalid public key data size: expected " + std::to_string(params_.module_rank * params_.degree * 4) + " bytes, got " + std::to_string(public_key.public_data.size()));
-    }
-
-    // Validate public key data is not empty and properly sized
+    // Validate public key data is not empty
     if (public_key.public_data.empty()) {
         throw std::invalid_argument("Public key data cannot be empty");
     }
@@ -466,14 +484,25 @@ std::pair<ColorCiphertext, ColorValue> ColorKEM::encapsulate(const ColorPublicKe
     auto matrix_A = generate_matrix_A(public_key.seed);
     // std::cout << "DEBUG ENCAP: Regenerated matrix A from seed" << std::endl;
 
-    std::vector<std::vector<ColorValue>> public_key_colors(params_.module_rank, std::vector<ColorValue>(params_.degree));
-    size_t idx = 0;
-    for (size_t i = 0; i < params_.module_rank; ++i) {
-        for (size_t d = 0; d < params_.degree; ++d) {
-            std::vector<uint8_t> bytes(public_key.public_data.begin() + idx,
-                                       public_key.public_data.begin() + idx + 4);
-            public_key_colors[i][d] = bytes_to_color_secret(bytes);
-            idx += 4;
+    std::vector<std::vector<ColorValue>> public_key_colors;
+    if (public_key.use_compression) {
+        // Decompress the public key data
+        public_key_colors = decode_colors_to_polynomial_vector_compressed(public_key.public_data, params_.module_rank, params_.degree, params_.modulus);
+    } else {
+        // Validate uncompressed data size
+        if (public_key.public_data.size() != params_.module_rank * params_.degree * 4) {
+            throw std::invalid_argument("Invalid public key data size: expected " + std::to_string(params_.module_rank * params_.degree * 4) + " bytes, got " + std::to_string(public_key.public_data.size()));
+        }
+
+        public_key_colors = std::vector<std::vector<ColorValue>>(params_.module_rank, std::vector<ColorValue>(params_.degree));
+        size_t idx = 0;
+        for (size_t i = 0; i < params_.module_rank; ++i) {
+            for (size_t d = 0; d < params_.degree; ++d) {
+                std::vector<uint8_t> bytes(public_key.public_data.begin() + idx,
+                                           public_key.public_data.begin() + idx + 4);
+                public_key_colors[i][d] = bytes_to_color_secret(bytes);
+                idx += 4;
+            }
         }
     }
     // std::cout << "DEBUG ENCAP: Public key colors (" << public_key_colors.size() << " elements):" << std::endl;
@@ -481,7 +510,7 @@ std::pair<ColorCiphertext, ColorValue> ColorKEM::encapsulate(const ColorPublicKe
     //     std::cout << "  t[" << i << "] = " << public_key_colors[i].to_math_value() << std::endl;
     // }
 
-    auto ciphertext_colors = encrypt_message(matrix_A, public_key_colors, ColorValue::from_math_value(shared_secret.to_math_value() & 1));
+    auto ciphertext_colors = encrypt_message(matrix_A, public_key_colors, shared_secret);
     // std::cout << "DEBUG ENCAP: Ciphertext colors (" << ciphertext_colors.size() << " elements):" << std::endl;
     // for (size_t i = 0; i < ciphertext_colors.size(); ++i) {
     //     std::cout << "  c[" << i << "] = " << ciphertext_colors[i].to_math_value() << std::endl;
@@ -518,26 +547,32 @@ std::pair<ColorCiphertext, ColorValue> ColorKEM::encapsulate_deterministic(const
         throw std::invalid_argument("Public key parameters do not match KEM instance parameters");
     }
 
-    // Validate public key data size
-    if (public_key.public_data.size() != params_.module_rank * params_.degree * 4) {
-        throw std::invalid_argument("Invalid public key data size: expected " + std::to_string(params_.module_rank * params_.degree * 4) + " bytes, got " + std::to_string(public_key.public_data.size()));
-    }
-
-    // Validate public key data is not empty and properly sized
+    // Validate public key data is not empty
     if (public_key.public_data.empty()) {
         throw std::invalid_argument("Public key data cannot be empty");
     }
 
     auto matrix_A = generate_matrix_A(public_key.seed);
 
-    std::vector<std::vector<ColorValue>> public_key_colors(params_.module_rank, std::vector<ColorValue>(params_.degree));
-    size_t idx = 0;
-    for (size_t i = 0; i < params_.module_rank; ++i) {
-        for (size_t d = 0; d < params_.degree; ++d) {
-            std::vector<uint8_t> bytes(public_key.public_data.begin() + idx,
-                                       public_key.public_data.begin() + idx + 4);
-            public_key_colors[i][d] = bytes_to_color_secret(bytes);
-            idx += 4;
+    std::vector<std::vector<ColorValue>> public_key_colors;
+    if (public_key.use_compression) {
+        // Decompress the public key data
+        public_key_colors = decode_colors_to_polynomial_vector_compressed(public_key.public_data, params_.module_rank, params_.degree, params_.modulus);
+    } else {
+        // Validate uncompressed data size
+        if (public_key.public_data.size() != params_.module_rank * params_.degree * 4) {
+            throw std::invalid_argument("Invalid public key data size: expected " + std::to_string(params_.module_rank * params_.degree * 4) + " bytes, got " + std::to_string(public_key.public_data.size()));
+        }
+
+        public_key_colors = std::vector<std::vector<ColorValue>>(params_.module_rank, std::vector<ColorValue>(params_.degree));
+        size_t idx = 0;
+        for (size_t i = 0; i < params_.module_rank; ++i) {
+            for (size_t d = 0; d < params_.degree; ++d) {
+                std::vector<uint8_t> bytes(public_key.public_data.begin() + idx,
+                                           public_key.public_data.begin() + idx + 4);
+                public_key_colors[i][d] = bytes_to_color_secret(bytes);
+                idx += 4;
+            }
         }
     }
 
@@ -557,9 +592,7 @@ std::pair<ColorCiphertext, ColorValue> ColorKEM::encapsulate_deterministic(const
 
     ColorCiphertext ciphertext{ciphertext_data, shared_secret_hint, params_};
 
-    ColorValue final_shared_secret = hash_ciphertext(ciphertext);
-
-    return {ciphertext, final_shared_secret};
+    return {ciphertext, shared_secret};
 }
 
 
@@ -591,24 +624,30 @@ ColorValue ColorKEM::decapsulate(const ColorPublicKey& public_key,
         throw std::invalid_argument("Ciphertext parameters do not match KEM instance parameters");
     }
 
-    // Validate private key data size
-    if (private_key.secret_data.size() != params_.module_rank * params_.degree * 4) {
-        throw std::invalid_argument("Invalid private key data size: expected " + std::to_string(params_.module_rank * params_.degree * 4) + " bytes, got " + std::to_string(private_key.secret_data.size()));
-    }
-
     // Validate private key data is not empty
     if (private_key.secret_data.empty()) {
         throw std::invalid_argument("Private key data cannot be empty");
     }
 
-    std::vector<std::vector<ColorValue>> secret_key_colors(params_.module_rank, std::vector<ColorValue>(params_.degree));
-    size_t idx_sk = 0;
-    for (size_t i = 0; i < params_.module_rank; ++i) {
-        for (size_t d = 0; d < params_.degree; ++d) {
-            std::vector<uint8_t> bytes(private_key.secret_data.begin() + idx_sk,
-                                       private_key.secret_data.begin() + idx_sk + 4);
-            secret_key_colors[i][d] = bytes_to_color_secret(bytes);
-            idx_sk += 4;
+    std::vector<std::vector<ColorValue>> secret_key_colors;
+    if (private_key.use_compression) {
+        // Decompress the private key data
+        secret_key_colors = decode_colors_to_polynomial_vector_compressed(private_key.secret_data, params_.module_rank, params_.degree, params_.modulus);
+    } else {
+        // Validate uncompressed data size
+        if (private_key.secret_data.size() != params_.module_rank * params_.degree * 4) {
+            throw std::invalid_argument("Invalid private key data size: expected " + std::to_string(params_.module_rank * params_.degree * 4) + " bytes, got " + std::to_string(private_key.secret_data.size()));
+        }
+
+        secret_key_colors = std::vector<std::vector<ColorValue>>(params_.module_rank, std::vector<ColorValue>(params_.degree));
+        size_t idx_sk = 0;
+        for (size_t i = 0; i < params_.module_rank; ++i) {
+            for (size_t d = 0; d < params_.degree; ++d) {
+                std::vector<uint8_t> bytes(private_key.secret_data.begin() + idx_sk,
+                                           private_key.secret_data.begin() + idx_sk + 4);
+                secret_key_colors[i][d] = bytes_to_color_secret(bytes);
+                idx_sk += 4;
+            }
         }
     }
     // std::cout << "DEBUG DECAP: Secret key colors (" << secret_key_colors.size() << " elements):" << std::endl;
@@ -651,11 +690,10 @@ ColorValue ColorKEM::decapsulate(const ColorPublicKey& public_key,
 
     // Fujisaki-Okamoto transform for IND-CCA2 security
     ColorValue hinted_secret = decode_color_secret(ciphertext.shared_secret_hint);
-    ColorValue result = hash_ciphertext(ciphertext);
     if (recovered_secret == hinted_secret) {
-        return result;
+        return recovered_secret;
     } else {
-        return result;
+        return hash_ciphertext(ciphertext);
     }
 }
 
@@ -727,80 +765,55 @@ std::vector<uint8_t> ColorPublicKey::serialize() const {
     }
 
     std::vector<uint8_t> data;
-
-    // Add compression header
-    data.push_back(0x01); // Version 1
-    data.push_back(0x01); // Format flag (1 = compressed public key)
-
-    // Store original public data size
-    uint32_t original_size = public_data.size();
-    data.push_back(static_cast<uint8_t>(original_size >> 24));
-    data.push_back(static_cast<uint8_t>(original_size >> 16));
-    data.push_back(static_cast<uint8_t>(original_size >> 8));
-    data.push_back(static_cast<uint8_t>(original_size & 0xFF));
-
+    data.push_back(format_version);
+    data.push_back(static_cast<uint8_t>(use_compression ? 1 : 0));
+    uint16_t metadata_size = static_cast<uint16_t>(metadata.size());
+    data.push_back(static_cast<uint8_t>(metadata_size >> 8));
+    data.push_back(static_cast<uint8_t>(metadata_size & 0xFF));
+    data.insert(data.end(), metadata.begin(), metadata.end());
     data.insert(data.end(), seed.begin(), seed.end());
-
-    // Use compressed encoding for public data
-    auto compressed_data = encode_color_kem_key_as_colors_compressed(public_data);
-    data.insert(data.end(), compressed_data.begin(), compressed_data.end());
-
+    data.insert(data.end(), public_data.begin(), public_data.end());
     return data;
 }
 
 ColorPublicKey ColorPublicKey::deserialize(const std::vector<uint8_t>& data, const CLWEParameters& params) {
-    if (data.size() < 40) { // Minimum: header(8) + seed(32)
-        throw std::invalid_argument("Public key data too small: minimum 40 bytes required, got " + std::to_string(data.size()));
+    if (data.size() < 38) {  // format_version(1) + use_compression(1) + metadata_size(2) + min_metadata(0) + seed(32) + min_public_data(4)
+        throw std::invalid_argument("Public key data too small: minimum 38 bytes required, got " + std::to_string(data.size()));
     }
 
     if (data.empty()) {
         throw std::invalid_argument("Public key data cannot be empty");
     }
 
+    ColorPublicKey key;
     size_t offset = 0;
-    uint8_t version = data[offset++];
-    uint8_t format_flag = data[offset++];
-
-    // Check if this is compressed format
-    if (version == 0x01 && format_flag == 0x01) {
-        // Compressed format
-        uint32_t original_size = (static_cast<uint32_t>(data[offset]) << 24) |
-                                (static_cast<uint32_t>(data[offset + 1]) << 16) |
-                                (static_cast<uint32_t>(data[offset + 2]) << 8) |
-                                data[offset + 3];
-        offset += 4;
-
-        if (offset + 32 > data.size()) {
-            throw std::invalid_argument("Public key data too small for seed");
-        }
-
-        ColorPublicKey key;
-        std::copy(data.begin() + offset, data.begin() + offset + 32, key.seed.begin());
-        offset += 32;
-
-        // Decompress the public data
-        std::vector<uint8_t> compressed_data(data.begin() + offset, data.end());
-        key.public_data = decode_colors_to_color_kem_key_compressed(compressed_data, original_size);
-        key.params = params;
-
-        // Validate public data size (should be multiple of 4 for ColorValue serialization and non-empty)
-        if (key.public_data.size() % 4 != 0 || key.public_data.empty()) {
-            throw std::invalid_argument("Invalid public key data size: must be non-empty and multiple of 4 bytes, got " + std::to_string(key.public_data.size()));
-        }
-        return key;
-    } else {
-        // Legacy uncompressed format (for backward compatibility)
-        ColorPublicKey key;
-        std::copy(data.begin(), data.begin() + 32, key.seed.begin());
-        key.public_data.assign(data.begin() + 32, data.end());
-        key.params = params;
-
-        // Validate public data size (should be multiple of 4 for ColorValue serialization and non-empty)
-        if (key.public_data.size() % 4 != 0 || key.public_data.empty()) {
-            throw std::invalid_argument("Invalid public key data size: must be non-empty and multiple of 4 bytes, got " + std::to_string(key.public_data.size()));
-        }
-        return key;
+    key.format_version = data[offset++];
+    key.use_compression = (data[offset++] != 0);
+    uint16_t metadata_size = (static_cast<uint16_t>(data[offset]) << 8) | data[offset + 1];
+    offset += 2;
+    if (offset + metadata_size + 32 > data.size()) {
+        throw std::invalid_argument("Invalid metadata size in public key data");
     }
+    key.metadata.assign(data.begin() + offset, data.begin() + offset + metadata_size);
+    offset += metadata_size;
+    std::copy(data.begin() + offset, data.begin() + offset + 32, key.seed.begin());
+    offset += 32;
+    key.public_data.assign(data.begin() + offset, data.end());
+    key.params = params;
+
+    // Validate public data size based on compression
+    if (key.use_compression) {
+        // For compressed data, just ensure non-empty
+        if (key.public_data.empty()) {
+            throw std::invalid_argument("Invalid public key data size: must be non-empty for compressed data, got " + std::to_string(key.public_data.size()));
+        }
+    } else {
+        // For uncompressed data, should be multiple of 4 for ColorValue serialization
+        if (key.public_data.size() % 4 != 0 || key.public_data.empty()) {
+            throw std::invalid_argument("Invalid public key data size: must be non-empty and multiple of 4 bytes for uncompressed data, got " + std::to_string(key.public_data.size()));
+        }
+    }
+    return key;
 }
 
 std::vector<uint8_t> ColorPrivateKey::serialize() const {
@@ -810,71 +823,52 @@ std::vector<uint8_t> ColorPrivateKey::serialize() const {
     }
 
     std::vector<uint8_t> data;
-
-    // Add compression header
-    data.push_back(0x01); // Version 1
-    data.push_back(0x02); // Format flag (2 = compressed private key)
-
-    // Store original secret data size
-    uint32_t original_size = secret_data.size();
-    data.push_back(static_cast<uint8_t>(original_size >> 24));
-    data.push_back(static_cast<uint8_t>(original_size >> 16));
-    data.push_back(static_cast<uint8_t>(original_size >> 8));
-    data.push_back(static_cast<uint8_t>(original_size & 0xFF));
-
-    // Use compressed encoding for secret data
-    auto compressed_data = encode_color_kem_key_as_colors_compressed(secret_data);
-    data.insert(data.end(), compressed_data.begin(), compressed_data.end());
-
+    data.push_back(format_version);
+    data.push_back(static_cast<uint8_t>(use_compression ? 1 : 0));
+    uint16_t metadata_size = static_cast<uint16_t>(metadata.size());
+    data.push_back(static_cast<uint8_t>(metadata_size >> 8));
+    data.push_back(static_cast<uint8_t>(metadata_size & 0xFF));
+    data.insert(data.end(), metadata.begin(), metadata.end());
+    data.insert(data.end(), secret_data.begin(), secret_data.end());
     return data;
 }
 
 ColorPrivateKey ColorPrivateKey::deserialize(const std::vector<uint8_t>& data, const CLWEParameters& params) {
-    if (data.size() < 8) { // Minimum: header(8)
-        throw std::invalid_argument("Private key data too small: minimum 8 bytes required, got " + std::to_string(data.size()));
+    if (data.size() < 4) {  // format_version(1) + use_compression(1) + metadata_size(2) + min_metadata(0) + min_secret_data(4)
+        throw std::invalid_argument("Private key data too small: minimum 4 bytes required, got " + std::to_string(data.size()));
     }
 
     if (data.empty()) {
         throw std::invalid_argument("Private key data cannot be empty");
     }
 
+    ColorPrivateKey key;
     size_t offset = 0;
-    uint8_t version = data[offset++];
-    uint8_t format_flag = data[offset++];
-
-    // Check if this is compressed format
-    if (version == 0x01 && format_flag == 0x02) {
-        // Compressed format
-        uint32_t original_size = (static_cast<uint32_t>(data[offset]) << 24) |
-                                (static_cast<uint32_t>(data[offset + 1]) << 16) |
-                                (static_cast<uint32_t>(data[offset + 2]) << 8) |
-                                data[offset + 3];
-        offset += 4;
-
-        ColorPrivateKey key;
-
-        // Decompress the secret data
-        std::vector<uint8_t> compressed_data(data.begin() + offset, data.end());
-        key.secret_data = decode_colors_to_color_kem_key_compressed(compressed_data, original_size);
-        key.params = params;
-
-        // Validate secret data size (should be multiple of 4 for ColorValue serialization and non-empty)
-        if (key.secret_data.size() % 4 != 0 || key.secret_data.empty()) {
-            throw std::invalid_argument("Invalid private key data size: must be non-empty and multiple of 4 bytes, got " + std::to_string(key.secret_data.size()));
-        }
-        return key;
-    } else {
-        // Legacy uncompressed format (for backward compatibility)
-        ColorPrivateKey key;
-        key.secret_data = data;
-        key.params = params;
-
-        // Validate secret data size (should be multiple of 4 for ColorValue serialization and non-empty)
-        if (key.secret_data.size() % 4 != 0 || key.secret_data.empty()) {
-            throw std::invalid_argument("Invalid private key data size: must be non-empty and multiple of 4 bytes, got " + std::to_string(key.secret_data.size()));
-        }
-        return key;
+    key.format_version = data[offset++];
+    key.use_compression = (data[offset++] != 0);
+    uint16_t metadata_size = (static_cast<uint16_t>(data[offset]) << 8) | data[offset + 1];
+    offset += 2;
+    if (offset + metadata_size > data.size()) {
+        throw std::invalid_argument("Invalid metadata size in private key data");
     }
+    key.metadata.assign(data.begin() + offset, data.begin() + offset + metadata_size);
+    offset += metadata_size;
+    key.secret_data.assign(data.begin() + offset, data.end());
+    key.params = params;
+
+    // Validate secret data size based on compression
+    if (key.use_compression) {
+        // For compressed data, just ensure non-empty
+        if (key.secret_data.empty()) {
+            throw std::invalid_argument("Invalid private key data size: must be non-empty for compressed data, got " + std::to_string(key.secret_data.size()));
+        }
+    } else {
+        // For uncompressed data, should be multiple of 4 for ColorValue serialization
+        if (key.secret_data.size() % 4 != 0 || key.secret_data.empty()) {
+            throw std::invalid_argument("Invalid private key data size: must be non-empty and multiple of 4 bytes for uncompressed data, got " + std::to_string(key.secret_data.size()));
+        }
+    }
+    return key;
 }
 
 std::vector<uint8_t> ColorCiphertext::serialize() const {
@@ -889,45 +883,56 @@ std::vector<uint8_t> ColorCiphertext::serialize() const {
     }
 
     std::vector<uint8_t> data;
+    data.push_back(format_version);
+    data.push_back(static_cast<uint8_t>(use_compression ? 1 : 0));
+    uint16_t metadata_size = static_cast<uint16_t>(metadata.size());
+    data.push_back(static_cast<uint8_t>(metadata_size >> 8));
+    data.push_back(static_cast<uint8_t>(metadata_size & 0xFF));
+    data.insert(data.end(), metadata.begin(), metadata.end());
     data.insert(data.end(), ciphertext_data.begin(), ciphertext_data.end());
     data.insert(data.end(), shared_secret_hint.begin(), shared_secret_hint.end());
     return data;
 }
 
 ColorCiphertext ColorCiphertext::deserialize(const std::vector<uint8_t>& data) {
+    if (data.size() < 10) {  // format_version(1) + use_compression(1) + metadata_size(2) + min_metadata(0) + min_ciphertext_data(4) + shared_secret_hint(4)
+        throw std::invalid_argument("Ciphertext data too small: minimum 10 bytes required, got " + std::to_string(data.size()));
+    }
+
     if (data.empty()) {
         throw std::invalid_argument("Ciphertext data cannot be empty");
     }
 
-    if (data.size() < 8 || data.size() % 4 != 0) {
-        throw std::invalid_argument("Invalid ciphertext data: size must be at least 8 bytes and multiple of 4, got " + std::to_string(data.size()));
-    }
-
     ColorCiphertext ct;
+    size_t offset = 0;
+    ct.format_version = data[offset++];
+    ct.use_compression = (data[offset++] != 0);
+    uint16_t metadata_size = (static_cast<uint16_t>(data[offset]) << 8) | data[offset + 1];
+    offset += 2;
+    if (offset + metadata_size + 4 > data.size()) {  // +4 for shared_secret_hint
+        throw std::invalid_argument("Invalid metadata size in ciphertext data");
+    }
+    ct.metadata.assign(data.begin() + offset, data.begin() + offset + metadata_size);
+    offset += metadata_size;
 
     // shared_secret_hint is always 4 bytes
     size_t hint_size = 4;
-    size_t ciphertext_size = data.size() - hint_size;
+    size_t ciphertext_size = data.size() - offset - hint_size;
 
     // Ensure ciphertext data is not empty
     if (ciphertext_size == 0) {
         throw std::invalid_argument("Ciphertext data portion cannot be empty");
     }
 
-    ct.ciphertext_data.assign(data.begin(), data.begin() + ciphertext_size);
-    ct.shared_secret_hint.assign(data.begin() + ciphertext_size, data.end());
+    ct.ciphertext_data.assign(data.begin() + offset, data.begin() + offset + ciphertext_size);
+    offset += ciphertext_size;
+    ct.shared_secret_hint.assign(data.begin() + offset, data.end());
 
     // Validate shared secret hint size
     if (ct.shared_secret_hint.size() != 4) {
         throw std::invalid_argument("Invalid shared secret hint size: expected 4 bytes, got " + std::to_string(ct.shared_secret_hint.size()));
     }
 
-    return ct;
-}
-
-ColorCiphertext ColorCiphertext::deserialize(const std::vector<uint8_t>& data, const CLWEParameters& params) {
-    ColorCiphertext ct = deserialize(data);
-    ct.params = params;
     return ct;
 }
 

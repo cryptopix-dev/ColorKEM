@@ -8,10 +8,6 @@
 #include <intrin.h>
 #endif
 
-#ifdef HAVE_AVX2
-#include <cpuid.h>
-#endif
-
 #ifdef __APPLE__
 #include <Security/SecRandom.h>
 #endif
@@ -23,17 +19,6 @@
 
 #ifdef __linux__
 #include <sys/random.h>
-#endif
-
-#if defined(__MINGW32__)
-#include <stdio.h>
-#include <stdarg.h>
-// Fix for undefined reference to __imp__vsnprintf in some MinGW builds with OpenSSL
-// This defines the symbol that libcrypto.a is looking for (which expects DLL import)
-// and points it to the statically linked vsnprintf implementation.
-extern "C" {
-    __attribute__((weak)) int (*__imp__vsnprintf)(char*, size_t, const char*, va_list) = vsnprintf;
-}
 #endif
 
 namespace clwe {
@@ -169,7 +154,7 @@ template class AVXVector<avx_type>;
 template class AVXVector<double>;
 template class AVXVector<int>;
 #ifdef HAVE_AVX2
-// template class AVXVector<__m256i>;
+template class AVXVector<__m256i>;
 #endif
 
 // Utility functions

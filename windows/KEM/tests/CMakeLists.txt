@@ -36,26 +36,6 @@ target_link_libraries(test_known_answer_tests PRIVATE clwe gtest_main)
 add_executable(test_performance_metrics test_performance_metrics.cpp)
 target_link_libraries(test_performance_metrics PRIVATE clwe gtest_main)
 
-# Windows-specific libraries for OpenSSL static linking
-if(WIN32)
-    set(TEST_EXECUTABLES 
-        test_color_value 
-        test_clwe_parameters 
-        test_color_kem 
-        test_serialization 
-        test_utils 
-        test_ntt_engine 
-        test_sampling 
-        test_integration_kem 
-        test_known_answer_tests 
-        test_performance_metrics
-    )
-    
-    foreach(test_exe ${TEST_EXECUTABLES})
-        add_windows_openssl_libs(${test_exe})
-    endforeach()
-endif()
-
 # Fuzzing targets (only if fuzzing is enabled)
 if(ENABLE_FUZZING)
     add_executable(fuzz_input_validation fuzz/fuzz_input_validation.cpp)
@@ -69,20 +49,6 @@ if(ENABLE_FUZZING)
 
     add_executable(fuzz_edge_cases fuzz/fuzz_edge_cases.cpp)
     target_link_libraries(fuzz_edge_cases PRIVATE clwe)
-    
-    # Windows-specific libraries for fuzzing targets
-    if(WIN32)
-        set(FUZZ_EXECUTABLES 
-            fuzz_input_validation 
-            fuzz_serialization 
-            fuzz_kem_operations 
-            fuzz_edge_cases
-        )
-        
-        foreach(fuzz_exe ${FUZZ_EXECUTABLES})
-            add_windows_openssl_libs(${fuzz_exe})
-        endforeach()
-    endif()
 endif()
 
 # Register tests

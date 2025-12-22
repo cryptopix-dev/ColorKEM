@@ -184,7 +184,7 @@ TEST_F(UtilsTest, AVXAllocator) {
 
     // Test edge cases
     ptr = AVXAllocator::allocate(0);
-    // EXPECT_NE(ptr, nullptr); // May return non-null for 0 size
+    EXPECT_NE(ptr, nullptr); // May return non-null for 0 size
     AVXAllocator::deallocate(ptr);
 }
 

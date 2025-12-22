@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "clwe/color_kem.hpp"
+#include "color_kem.hpp"
 #include "clwe.hpp"
 #include <vector>
 #include <array>
