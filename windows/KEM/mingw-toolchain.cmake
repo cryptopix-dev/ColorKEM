@@ -1,11 +1,20 @@
 # MinGW toolchain file for ColorKEM Windows build
 
-# Specify the compilers
-set(CMAKE_C_COMPILER "C:/ProgramData/mingw64/mingw64/bin/gcc.exe" CACHE FILEPATH "C compiler")
-set(CMAKE_CXX_COMPILER "C:/ProgramData/mingw64/mingw64/bin/g++.exe" CACHE FILEPATH "C++ compiler")
+# Find MinGW installation
+set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake" ${CMAKE_MODULE_PATH})
+find_package(MinGW REQUIRED)
 
-# Set OpenSSL path for MinGW
-set(OPENSSL_ROOT_DIR "C:/ProgramData/mingw64/mingw64/opt" CACHE PATH "OpenSSL root directory")
+# Specify the compilers
+set(CMAKE_C_COMPILER "${MINGW_C_COMPILER}" CACHE FILEPATH "C compiler")
+set(CMAKE_CXX_COMPILER "${MINGW_CXX_COMPILER}" CACHE FILEPATH "C++ compiler")
+
+# Set OpenSSL path for MinGW (assume it's in the same MinGW root)
+set(OPENSSL_ROOT_DIR "${MINGW_ROOT}" CACHE PATH "OpenSSL root directory")
+
+# Set pkg-config if found
+if(MINGW_PKG_CONFIG)
+    set(PKG_CONFIG_EXECUTABLE "${MINGW_PKG_CONFIG}" CACHE FILEPATH "pkg-config executable")
+endif()
 
 # Set compiler flags
 set(CMAKE_CXX_STANDARD 17 CACHE STRING "C++ standard")
