@@ -1,3 +1,0 @@
-C:\msys64\mingw64\bin\cmake.exe -E rm -f CMakeFiles\generate_key_images.dir/objects.a
-C:\msys64\mingw64\bin\ar.exe qc CMakeFiles\generate_key_images.dir/objects.a @CMakeFiles\generate_key_images.dir\objects1.rsp
-C:\msys64\mingw64\bin\g++.exe -O3 -Wl,--whole-archive CMakeFiles\generate_key_images.dir/objects.a -Wl,--no-whole-archive -o generate_key_images.exe -Wl,--out-implib,libgenerate_key_images.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\generate_key_images.dir\linkLibs.rsp
