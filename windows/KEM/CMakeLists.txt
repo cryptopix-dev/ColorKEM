@@ -4,14 +4,7 @@ project(ColorKEM VERSION 1.0.0 LANGUAGES C CXX)
 # Compiler settings
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-<<<<<<< Updated upstream
-# Enable GNU extensions (uses -std=gnu++17 instead of -std=c++17)
-# This prevents __STRICT_ANSI__ from being defined (fixing the at_quick_exit issue)
-# and enables GNU extensions like 'Q' suffix for high-precision floats (fixing the googletest issue).
-set(CMAKE_CXX_EXTENSIONS ON)
-=======
 set(CMAKE_CXX_FLAGS_RELEASE "-O3")
->>>>>>> Stashed changes
 
 # Multi-architecture SIMD detection and configuration
 include(CheckCXXCompilerFlag)
@@ -70,12 +63,7 @@ if(CMAKE_CROSSCOMPILING)
 endif()
 
 # Dependencies - Use MinGW's built-in OpenSSL
-<<<<<<< Updated upstream
-# OPENSSL_ROOT_DIR should be passed from command line
-# set(OPENSSL_ROOT_DIR "C:/ProgramData/mingw64/mingw64/opt")
-=======
 set(OPENSSL_ROOT_DIR "C:/msys64/mingw64")
->>>>>>> Stashed changes
 set(OPENSSL_USE_STATIC_LIBS TRUE)
 set(OPENSSL_INCLUDE_DIR "C:/msys64/mingw64/include")
 set(OPENSSL_CRYPTO_LIBRARY "C:/msys64/mingw64/lib/libcrypto.a")
@@ -152,14 +140,8 @@ if(NOT GTest_FOUND)
     set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 
     # Set compiler for subproject before making it available
-<<<<<<< Updated upstream
-    # CMAKE_C_COMPILER and CMAKE_CXX_COMPILER are passed from the main project
-    # set(CMAKE_C_COMPILER "C:/ProgramData/mingw64/mingw64/bin/gcc.exe" CACHE FILEPATH "C compiler" FORCE)
-    # set(CMAKE_CXX_COMPILER "C:/ProgramData/mingw64/mingw64/bin/g++.exe" CACHE FILEPATH "C++ compiler" FORCE)
-=======
     set(CMAKE_C_COMPILER "C:/msys64/mingw64/bin/gcc.exe" CACHE FILEPATH "C compiler" FORCE)
     set(CMAKE_CXX_COMPILER "C:/msys64/mingw64/bin/g++.exe" CACHE FILEPATH "C++ compiler" FORCE)
->>>>>>> Stashed changes
 
     # Suppress CMake deprecation warnings from googletest
     set(CMAKE_POLICY_VERSION_MINIMUM 3.16)
@@ -252,15 +234,6 @@ endif()
 add_executable(benchmark_color_kem_timing benchmark_color_kem_timing.cpp)
 target_link_libraries(benchmark_color_kem_timing PRIVATE clwe)
 
-<<<<<<< Updated upstream
-# Windows-specific libraries for OpenSSL static linking
-if(WIN32)
-    add_windows_openssl_libs(benchmark_color_kem_timing)
-endif()
-
-
-=======
->>>>>>> Stashed changes
 if(WEBP_FOUND)
     # Key image generator executable
     add_executable(generate_key_images generate_key_images.cpp)
