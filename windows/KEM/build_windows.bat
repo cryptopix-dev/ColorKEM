@@ -109,6 +109,10 @@ if %errorlevel% neq 0 (
     echo Build failed.
     exit /b 1
 )
+REM Copy required MinGW runtime DLLs
+copy "%MINGW_ROOT%\bin\libgcc_s_seh-1.dll" .
+copy "%MINGW_ROOT%\bin\libstdc++-6.dll" .
+copy "%MINGW_ROOT%\bin\libwinpthread-1.dll" .
 
 REM Return to original directory
 cd ..
@@ -140,6 +144,20 @@ if exist "build\benchmark_color_kem_timing.exe" (
     cd ..
 ) else (
     echo Warning: benchmark_color_kem_timing.exe not found.
+)
+REM Check if we can run generate_key_images
+if exist "build\generate_key_images.exe" (
+    echo Running generate_key_images verification...
+    cd build
+    generate_key_images.exe
+    if %errorlevel% equ 0 (
+        echo generate_key_images verification passed!
+    ) else (
+        echo Warning: generate_key_images verification failed.
+    )
+    cd ..
+) else (
+    echo Warning: generate_key_images.exe not found.
 )
 
 endlocal
