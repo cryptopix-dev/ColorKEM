@@ -479,7 +479,6 @@ std::pair<ColorCiphertext, ColorValue> ColorKEM::encapsulate(const ColorPublicKe
     uint8_t byte;
     secure_random_bytes(&byte, 1);
     ColorValue shared_secret = ColorValue::from_math_value(byte & 1);
-    // std::cout << "DEBUG ENCAP: Shared secret = " << shared_secret.to_precise_value() << std::endl;
 
     auto matrix_A = generate_matrix_A(public_key.seed);
     // std::cout << "DEBUG ENCAP: Regenerated matrix A from seed" << std::endl;
@@ -686,17 +685,13 @@ ColorValue ColorKEM::decapsulate(const ColorPublicKey& public_key,
     // }
 
     ColorValue recovered_secret = decrypt_message(secret_key_colors, ciphertext_colors);
-    std::cout << "DEBUG DECAP: Recovered secret = " << recovered_secret.to_math_value() << std::endl;
 
     // Fujisaki-Okamoto transform for IND-CCA2 security
     ColorValue hinted_secret = decode_color_secret(ciphertext.shared_secret_hint);
-    std::cout << "DEBUG DECAP: Hinted secret = " << hinted_secret.to_math_value() << std::endl;
     if (recovered_secret == hinted_secret) {
         return recovered_secret;
     } else {
-        ColorValue hash_val = hash_ciphertext(ciphertext);
-        std::cout << "DEBUG DECAP: Returning hash = " << hash_val.to_math_value() << std::endl;
-        return hash_val;
+        return hash_ciphertext(ciphertext);
     }
 }
 
