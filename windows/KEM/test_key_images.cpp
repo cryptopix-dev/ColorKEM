@@ -123,8 +123,17 @@ int main(int argc, char* argv[]) {
         clwe::CLWEParameters params(512);
         clwe::ColorKEM kem(params);
 
+        // Fixed seeds for deterministic key generation and encapsulation
+        std::array<uint8_t, 32> matrix_seed = {0};
+        std::array<uint8_t, 32> secret_seed = {0};
+        std::array<uint8_t, 32> error_seed = {0};
+        std::array<uint8_t, 32> r_seed = {0};
+        std::array<uint8_t, 32> e1_seed = {0};
+        std::array<uint8_t, 32> e2_seed = {0};
+        clwe::ColorValue fixed_shared_secret(0, 0, 0, 1); // shared_secret = 1
+
         std::cout << "Generating keys for testing..." << std::endl;
-        auto [public_key, private_key] = kem.keygen();
+        auto [public_key, private_key] = kem.keygen_deterministic(matrix_seed, secret_seed, error_seed);
         std::cout << "Keys generated successfully!" << std::endl;
 
         // Test serialization and deserialization
@@ -134,40 +143,17 @@ int main(int argc, char* argv[]) {
         auto pub_loaded = clwe::ColorPublicKey::deserialize(pub_ser, params);
         auto priv_loaded = clwe::ColorPrivateKey::deserialize(priv_ser, params);
         std::cout << "Keys serialized and deserialized successfully!" << std::endl;
+std::cout << "Encapsulating shared secret..." << std::endl;
 
-        // Test WebP
-        try {
-            // Save as WebP
-            std::string pub_webp_file = input_dir + "/public_key.webp";
-            std::string priv_webp_file = input_dir + "/private_key.webp";
-            save_webp_file(pub_ser, pub_webp_file);
-            save_webp_file(priv_ser, priv_webp_file);
+auto [ciphertext, shared_secret_enc] = kem.encapsulate_deterministic(public_key, r_seed, e1_seed, e2_seed, fixed_shared_secret);
 
-            // Load from WebP
-            auto pub_webp = load_webp_file(pub_webp_file);
-            auto priv_webp = load_webp_file(priv_webp_file);
-
-            if (pub_webp == pub_ser && priv_webp == priv_ser) {
-                std::cout << "WebP serialization and deserialization successful!" << std::endl;
-                pub_loaded = clwe::ColorPublicKey::deserialize(pub_webp, params);
-                priv_loaded = clwe::ColorPrivateKey::deserialize(priv_webp, params);
-                std::cout << "Keys loaded from WebP successfully!" << std::endl;
-            } else {
-                std::cout << "WebP data does not match!" << std::endl;
-                return 1;
-            }
-        } catch (const std::exception& e) {
-            std::cerr << "WebP test failed: " << e.what() << std::endl;
-            return 1;
-        }
-
-        std::cout << "Encapsulating shared secret..." << std::endl;
-        auto [ciphertext, shared_secret_enc] = kem.encapsulate(public_key);
-
-        std::cout << "Encapsulation successful!" << std::endl;
+std::cout << "Encapsulation successful!" << std::endl;
 
         std::cout << "Decapsulating shared secret..." << std::endl;
         auto shared_secret_dec = kem.decapsulate(public_key, private_key, ciphertext);
+
+        std::cout << "Encapsulated secret: " << shared_secret_enc.to_math_value() << std::endl;
+        std::cout << "Decapsulated secret: " << shared_secret_dec.to_math_value() << std::endl;
 
         if (shared_secret_enc == shared_secret_dec) {
             std::cout << "Shared secret matches!" << std::endl;

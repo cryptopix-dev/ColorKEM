@@ -123,7 +123,6 @@ void ColorNTTEngine::ntt_inverse_colors(ColorValue* poly) const {
             if (zeta_index >= n_) zeta_index -= n_;
         }
     }
-
 }
 
 void ColorNTTEngine::multiply_colors(const ColorValue* a, const ColorValue* b, ColorValue* result) const {
@@ -143,6 +142,13 @@ void ColorNTTEngine::multiply_colors(const ColorValue* a, const ColorValue* b, C
     }
 
     ntt_inverse_colors(result);
+
+    // Scale by n to get correct convolution coefficients
+    for (uint32_t i = 0; i < n_; ++i) {
+        uint64_t current_val = result[i].to_math_value();
+        uint64_t scaled = (current_val * n_) % modulus();
+        result[i] = ColorValue::from_math_value(scaled);
+    }
 }
 
 void ColorNTTEngine::convert_uint32_to_colors(const uint32_t* coeffs, ColorValue* colors) const {

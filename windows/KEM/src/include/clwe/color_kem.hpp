@@ -139,6 +139,9 @@ public:
     // Key verification
     bool verify_keypair(const ColorPublicKey& public_key, const ColorPrivateKey& private_key) const;
 
+    // Hash ciphertext for FO transform
+    ColorValue hash_ciphertext(const ColorCiphertext& ciphertext) const;
+
     // Getters
     const CLWEParameters& params() const { return params_; }
 };

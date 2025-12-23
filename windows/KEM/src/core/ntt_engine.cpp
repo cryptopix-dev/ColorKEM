@@ -1,9 +1,9 @@
 #include "ntt_engine.hpp"
 #include "cpu_features.hpp"
 #include "ntt_scalar.hpp"
-// #ifdef HAVE_AVX2
-// #include "ntt_avx.hpp"
-// #endif
+#ifdef HAVE_AVX2
+#include "ntt_avx.hpp"
+#endif
 #ifdef HAVE_NEON
 #include "ntt_neon.hpp"
 #endif
@@ -87,6 +87,7 @@ std::unique_ptr<NTTEngine> create_ntt_engine(SIMDSupport simd_support, uint32_t 
             return std::make_unique<RVVNTTEngine>(q, n);
 #endif
 #ifdef HAVE_AVX2
+        // Disabled AVX2 to use scalar NTT operations due to potential bugs
         // case SIMDSupport::AVX512:
         // case SIMDSupport::AVX2:
         //     return std::make_unique<AVXNTTEngine>(q, n);

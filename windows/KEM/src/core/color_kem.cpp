@@ -686,14 +686,17 @@ ColorValue ColorKEM::decapsulate(const ColorPublicKey& public_key,
     // }
 
     ColorValue recovered_secret = decrypt_message(secret_key_colors, ciphertext_colors);
-    // std::cout << "DEBUG DECAP: Recovered secret = " << recovered_secret.to_precise_value() << std::endl;
+    std::cout << "DEBUG DECAP: Recovered secret = " << recovered_secret.to_math_value() << std::endl;
 
     // Fujisaki-Okamoto transform for IND-CCA2 security
     ColorValue hinted_secret = decode_color_secret(ciphertext.shared_secret_hint);
+    std::cout << "DEBUG DECAP: Hinted secret = " << hinted_secret.to_math_value() << std::endl;
     if (recovered_secret == hinted_secret) {
         return recovered_secret;
     } else {
-        return hash_ciphertext(ciphertext);
+        ColorValue hash_val = hash_ciphertext(ciphertext);
+        std::cout << "DEBUG DECAP: Returning hash = " << hash_val.to_math_value() << std::endl;
+        return hash_val;
     }
 }
 
