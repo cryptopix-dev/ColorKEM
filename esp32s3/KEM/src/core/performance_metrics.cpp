@@ -32,7 +32,7 @@ MemoryStats PerformanceMetrics::get_memory_usage_impl() {
 
 // ESP32-specific CPU cycle counting
 uint64_t PerformanceMetrics::get_cpu_cycles_impl() {
-    return esp_cpu_get_ccount();
+    return esp_cpu_get_cycle_count();
 }
 
 } // namespace clwe
