@@ -138,6 +138,7 @@ set(BASE_SOURCES
     src/core/color_value.cpp
     src/core/color_ntt_engine.cpp
     src/core/color_kem.cpp
+    src/core/color_integration.cpp
     src/core/cpu_features.cpp
     src/core/shake_sampler.cpp
     src/core/sampling.cpp

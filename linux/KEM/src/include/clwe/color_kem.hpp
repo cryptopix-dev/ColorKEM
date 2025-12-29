@@ -27,6 +27,10 @@
 #include <vector>
 #include <array>
 #include <memory>
+#ifdef ENABLE_HSM
+#include "hsm/hsm_interface.hpp"
+#include "hsm/hsm_config.hpp"
+#endif
 
 namespace clwe {
 
@@ -134,6 +138,10 @@ class ColorKEM {
 private:
     CLWEParameters params_;
     std::unique_ptr<ColorNTTEngine> color_ntt_engine_;
+#ifdef ENABLE_HSM
+    std::unique_ptr<clwe::hsm::HSMInterface> hsm_;
+    clwe::hsm::HSMConfig hsm_config_;
+#endif
 
     // Helper methods
     std::vector<std::vector<ColorValue>> generate_matrix_A(const std::array<uint8_t, 32>& seed) const;
@@ -181,7 +189,27 @@ public:
      * @note Parameter validation is performed during construction.
      * @see CLWEParameters for parameter details
      */
-    ColorKEM(const CLWEParameters& params);
+     ColorKEM(const CLWEParameters& params);
+
+#ifdef ENABLE_HSM
+     /**
+      * @brief Construct a new ColorKEM instance with HSM support
+      *
+      * Initializes the KEM with the specified cryptographic parameters and HSM configuration.
+      * The constructor validates parameters and initializes the NTT engine and HSM if enabled.
+      *
+      * @param params Cryptographic parameters (security level, modulus, etc.)
+      * @param hsm_config HSM configuration for hardware security module integration
+      *
+      * @throws std::invalid_argument If parameters are invalid
+      * @throws std::runtime_error If NTT engine or HSM initialization fails
+      *
+      * @note Parameter validation is performed during construction.
+      * @see CLWEParameters for parameter details
+      * @see HSMConfig for HSM configuration details
+      */
+     ColorKEM(const CLWEParameters& params, const clwe::hsm::HSMConfig& hsm_config);
+#endif
 
     /**
      * @brief Destroy the ColorKEM instance

@@ -1,0 +1,11 @@
+ColorValueTests 1 0.00851829
+CLWEParametersTests 1 0.00828358
+ColorKEMTests 1 0.234674
+SerializationTests 1 0.0653439
+UtilsTests 1 0.00756038
+NTTEngineTests 1 0.00749021
+SamplingTests 1 0.00810779
+IntegrationKEMTests 1 4.08913
+KnownAnswerTests 1 5.28092
+PerformanceMetricsTests 1 0.0239214
+---

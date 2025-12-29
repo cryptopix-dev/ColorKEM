@@ -6,6 +6,9 @@
 #include <algorithm>
 #include <iomanip>
 #include <stdexcept>
+#ifdef ENABLE_HSM
+#include "hsm/software_hsm.hpp"
+#endif
 
 #ifdef HAVE_AVX2
 #include <immintrin.h>
@@ -24,9 +27,40 @@ namespace clwe {
 ColorKEM::ColorKEM(const CLWEParameters& params)
     : params_(params), cpu_features_(CPUFeatureDetector::detect()) {
     color_ntt_engine_ = std::make_unique<ColorNTTEngine>(params_.modulus, params_.degree);
+#ifdef ENABLE_HSM
+    hsm_config_ = clwe::hsm::get_global_hsm_config();
+    if (hsm_config_.isEnabled()) {
+        if (hsm_config_.backend == clwe::hsm::HSMBackend::SOFTWARE_SIM) {
+            hsm_ = clwe::hsm::create_software_hsm();
+            auto result = hsm_->initialize();
+            if (!result.success) {
+                throw std::runtime_error("Failed to initialize software HSM: " + result.error_message);
+            }
+        }
+        // TODO: Add support for other HSM backends
+    }
+#endif
 }
 
 ColorKEM::~ColorKEM() = default;
+
+#ifdef ENABLE_HSM
+ColorKEM::ColorKEM(const CLWEParameters& params, const clwe::hsm::HSMConfig& hsm_config)
+    : params_(params), cpu_features_(CPUFeatureDetector::detect()), hsm_config_(hsm_config) {
+    color_ntt_engine_ = std::make_unique<ColorNTTEngine>(params_.modulus, params_.degree);
+
+    if (hsm_config_.isEnabled()) {
+        if (hsm_config_.backend == clwe::hsm::HSMBackend::SOFTWARE_SIM) {
+            hsm_ = clwe::hsm::create_software_hsm();
+            auto result = hsm_->initialize();
+            if (!result.success) {
+                throw std::runtime_error("Failed to initialize software HSM: " + result.error_message);
+            }
+        }
+        // TODO: Add support for other HSM backends
+    }
+}
+#endif
 
 
 std::vector<std::vector<std::vector<ColorValue>>> ColorKEM::generate_matrix_A(const std::array<uint8_t, 32>& seed) const {
@@ -377,6 +411,18 @@ std::pair<ColorPublicKey, ColorPrivateKey> ColorKEM::keygen() {
     ColorPublicKey public_key{matrix_seed, public_data, params_};
     ColorPrivateKey private_key{secret_data, params_};
 
+#ifdef ENABLE_HSM
+    // If HSM is enabled, store the private key securely
+    if (hsm_ && hsm_config_.require_hsm_for_private_keys) {
+        auto import_result = hsm_->import_key(clwe::hsm::KeyType::SECRET_KEY, secret_data);
+        if (!import_result.success) {
+            throw std::runtime_error("Failed to import private key to HSM: " + import_result.error_message);
+        }
+        // Store the HSM handle in the private key (this would require extending ColorPrivateKey)
+        // For now, we'll keep the data but mark it as HSM-protected
+    }
+#endif
+
     return {public_key, private_key};
 }
 
@@ -401,9 +447,11 @@ std::pair<ColorCiphertext, ColorValue> ColorKEM::encapsulate(const ColorPublicKe
         throw std::invalid_argument("Public key data cannot be empty");
     }
 
-    uint8_t byte;
-    secure_random_bytes(&byte, 1);
-    ColorValue shared_secret = ColorValue::from_math_value(byte & 1);
+    uint8_t bytes[4];
+    secure_random_bytes(bytes, 4);
+    uint32_t value = (bytes[0] << 24) | (bytes[1] << 16) | (bytes[2] << 8) | bytes[3];
+    value %= params_.modulus;
+    ColorValue shared_secret = ColorValue::from_math_value(value);
     // std::cout << "DEBUG ENCAP: Shared secret = " << shared_secret.to_precise_value() << std::endl;
 
     auto matrix_A = generate_matrix_A(public_key.seed);
@@ -443,6 +491,8 @@ std::pair<ColorCiphertext, ColorValue> ColorKEM::encapsulate(const ColorPublicKe
     auto shared_secret_hint = encode_color_secret(shared_secret);
 
     ColorCiphertext ciphertext{ciphertext_data, shared_secret_hint, params_};
+
+    shared_secret = hash_ciphertext(ciphertext);
 
     return {ciphertext, shared_secret};
 }

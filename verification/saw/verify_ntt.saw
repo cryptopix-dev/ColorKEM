@@ -1,0 +1,38 @@
+// SAW verification script for ColorKEM NTT functions
+// This script demonstrates how to verify NTT operations using SAW
+
+// Load Cryptol specifications
+cryptol_load "verification/cryptol/polynomial_arithmetic.cry"
+cryptol_load "verification/cryptol/ntt.cry"
+
+// Import C code (example - adjust paths as needed)
+c <- llvm_load_module "linux/KEM/src/core/ntt_scalar.cpp";
+
+// Extract functions to verify
+let ntt_forward_c = c `llvm_extract` "ntt_forward";
+let ntt_inverse_c = c `llvm_extract` "ntt_inverse";
+let poly_mul_c = c `llvm_extract` "multiply";
+
+// Define verification theorems
+// Note: These are placeholders - actual proofs require detailed specifications
+
+// Verify NTT forward is bijective (simplified)
+theorem ntt_forward_bijective : thm {
+  forall (poly : Poly) .
+    ntt_inverse (ntt_forward poly) == poly
+};
+
+// Verify polynomial multiplication correctness
+theorem poly_mul_correct : thm {
+  forall (a b : Poly) .
+    poly_mul_ntt a b == poly_mul_naive a b
+};
+
+// Example verification command (commented out)
+// prove ntt_forward_bijective;
+
+// Note: This is a basic framework. Full verification requires:
+// 1. Complete Cryptol specifications
+// 2. Proper C code extraction and setup
+// 3. Detailed proof development
+// 4. Handling of Montgomery arithmetic, bit operations, etc.
